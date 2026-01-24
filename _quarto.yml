@@ -23,5 +23,6 @@ format:
   html:
     theme: cosmo
     toc: true
+    css: styles.css
 
 
