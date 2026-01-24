@@ -1,5 +1,6 @@
 project:
   type: website
+  output-dir: docs
 
 website:
   title: "Christopher Antwi"
@@ -7,15 +8,15 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - href: research.qmd
+      - href: Research.qmd
         text: Research
-      - href: projects.qmd
+      - href: Projects.qmd
         text: Projects
-      - href: papers.qmd
+      - href: Papers.qmd
         text: Papers
-      - href: notes.qmd
+      - href: Notes.qmd
         text: Notes
-      - href: cv.qmd
+      - href: CV.qmd
         text: CV
 
 format:
