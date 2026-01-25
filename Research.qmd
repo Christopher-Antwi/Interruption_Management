@@ -2,3 +2,11 @@
 title: "Research"
 format: html
 ---
+
+# Working Research
+
+-   [LiW Feeders PCA](LiW_Principle_Component_Analysis.html)
+
+-   [Logbook Long Run Analysis](Logbook_Long_Run_Analysis.html)
+
+-   [2024 MSOM Challenge: Merck Continuous Direct Compression Manufacturing Data Overview](Merck_Data_CDC_Process_Overview.html)
