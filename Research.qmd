@@ -5,8 +5,8 @@ format: html
 
 # Working Research
 
--   [LiW Feeders PCA](LiW_Principle_Component_Analysis.html)
+-   [LiW Feeders PCA](research/LiW_Principle_Component_Analysis.qmd)
 
--   [Logbook Long Run Analysis](Logbook_Long_Run_Analysis.html)
+-   [Logbook Long Run Analysis](research/Logbook_Long_Run_Analysis.qmd)
 
--   [2024 MSOM Challenge: Merck Continuous Direct Compression Manufacturing Data Overview](Merck_Data_CDC_Process_Overview.html)
+-   [2024 MSOM Challenge: Merck Continuous Direct Compression Manufacturing Data Overview](research/Merck_Data_CDC_Process_Overview.qmd)
