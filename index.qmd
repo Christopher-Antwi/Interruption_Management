@@ -9,15 +9,8 @@ format:
 
 # Interruption Management Analysis
 
-:::::: home-hero
-::: home-stars
-:::
-
-::: home-glow
-:::
-
 ::: home-content
-```         
+```{=html}
 <div class="home-kicker">FUTURE-FACING RESEARCH</div>
 <h1 class="home-title">Christopher Antwi</h1>
 <p class="home-subtitle">Operations Management · Manufacturing Analytics · Process Monitoring</p>
@@ -28,7 +21,6 @@ format:
 </div>
 ```
 :::
-::::::
 
 ## Featured
 
