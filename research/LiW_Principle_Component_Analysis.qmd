@@ -119,14 +119,23 @@ Utilized this to determine how many principle components would potentially be us
 
 ## PCA Scores (3D)
 
-## PCA Loadings (3D, Scaled)
-
-## PCA Biplot (3D)
-
 ```{=html}
-<iframe src="assets/figures/pca_scores_3d.html" width="100%" height="650" style="border:0;"></iframe>
 
-<iframe src="assets/figures/pca_loadings_3d.html" width="100%" height="650" style="border:0;"></iframe>
 
-<iframe src="assets/figures/pca_biplot_3d.html" width="100%" height="650" style="border:0;"></iframe>
+<iframe src="../assets/figures/pca_scores_3d.html"
+        width="100%" height="650"
+        style="border:0;">
+</iframe>
+
+
+<iframe src="../assets/figures/pca_loadings_3d.html"
+        width="100%" height="650"
+        style="border:0;">
+</iframe>
+
+
+<iframe src="../assets/figures/pca_biplot_3d.html"
+        width="100%" height="650"
+        style="border:0;">
+</iframe>
 ```

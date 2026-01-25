@@ -1,6 +1,10 @@
 project:
   type: website
   output-dir: docs
+  resources:
+  - assets/figures/*.html
+  - assets/figures/*.js
+  - assets/figures/*.css
 
 website:
   title: "Christopher Antwi"
