@@ -53,7 +53,7 @@
     "href": "index.html",
     "title": "Home",
     "section": "",
-    "text": "FUTURE-FACING RESEARCH\n\nOperations Management · Manufacturing Analytics · Process Monitoring\n\n\n  Explore Research\n  Projects\n\n\n\n\n\n\n\n\nPCA & Process Monitoring\n\n\nStability, Drift, and Multivariate Signals in LiW Feeder Systems.\n\nOpen →\n\n\n\n\n\nLogbook Event Mining\n\n\nDisruptions, Downtime, and Long-Run Operational Patterns.\n\nOpen →\n\n\n\n\n\nContinuous Manufacturing\n\n\nSystems View of CDC Lines and End-to-End Throughput Behavior.\n\nOpen →"
+    "text": "Operations Management\n    \n    Operations · Business Analytics · Continuous Improvement · Process Monitoring\n\n    \n      Explore Research\n      Projects\n    \n  \n\n\n\n\n\n\n\n\nPCA & Process Monitoring\n\n\nStability, Drift, and Multivariate Signals in LiW Feeder Systems.\n\nOpen →\n\n\n\n\n\nLogbook Event Mining\n\n\nDisruptions, Downtime, and Long-Run Operational Patterns.\n\nOpen →\n\n\n\n\n\nContinuous Manufacturing\n\n\nSystems View of CDC Lines and End-to-End Throughput Behavior.\n\nOpen →"
   },
   {
     "objectID": "index.html#featured",
@@ -109,7 +109,7 @@
     "href": "research/LiW_Principle_Component_Analysis.html#pca-biplot-3d",
     "title": "Loss-in-Weight Feeder PCA",
     "section": "PCA Biplot (3D)",
-    "text": "PCA Biplot (3D)\nPCA Scores (3D)\n\n\nPCA Loadings (3D, Scaled)\n\n\nPCA Biplot (3D)"
+    "text": "PCA Biplot (3D)"
   },
   {
     "objectID": "research/Merck_Data_CDC_Process_Overview.html",
