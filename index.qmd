@@ -1,5 +1,77 @@
 ---
-title: "Interruption_Management"
+title: "Home"
+page-layout: full
+toc: false
+format: 
+  html: 
+    css: home.css
 ---
 
 # Interruption Management Analysis
+
+:::::: home-hero
+::: home-stars
+:::
+
+::: home-glow
+:::
+
+::: home-content
+```         
+<div class="home-kicker">FUTURE-FACING RESEARCH</div>
+<h1 class="home-title">Christopher Antwi</h1>
+<p class="home-subtitle">Operations Management · Manufacturing Analytics · Process Monitoring</p>
+
+<div class="home-actions">
+  <a class="home-btn home-btn-primary" href="Research.html">Explore Research</a>
+  <a class="home-btn home-btn-ghost" href="Projects.html">Projects</a>
+</div>
+```
+:::
+::::::
+
+## Featured
+
+::::::::::::::: grid
+:::::: g-col-4
+::::: home-card
+::: home-card-title
+PCA & Process Monitoring
+:::
+
+::: home-card-text
+Stability, Drift, and Multivariate Signals in LiW Feeder Systems.
+:::
+
+<a class="home-card-link" href="Research.html">Open →</a>
+:::::
+::::::
+
+:::::: g-col-4
+::::: home-card
+::: home-card-title
+Logbook Event Mining
+:::
+
+::: home-card-text
+Disruptions, Downtime, and Long-Run Operational Patterns.
+:::
+
+<a class="home-card-link" href="Research.html">Open →</a>
+:::::
+::::::
+
+:::::: g-col-4
+::::: home-card
+::: home-card-title
+Continuous Manufacturing
+:::
+
+::: home-card-text
+Systems View of CDC Lines and End-to-End Throughput Behavior.
+:::
+
+<a class="home-card-link" href="Research.html">Open →</a>
+:::::
+::::::
+:::::::::::::::

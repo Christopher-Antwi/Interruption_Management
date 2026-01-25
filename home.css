@@ -1,0 +1,138 @@
+/* ===== Home-only sci-fi landing ===== */
+/* This file will be included ONLY on index.qmd */
+
+.home-hero{
+  position: relative;
+  min-height: 78vh;
+  border-radius: 18px;
+  overflow: hidden;
+  margin: 1rem 0 2.5rem 0;
+  display: grid;
+  place-items: center;
+  padding: 4rem 1.5rem;
+  background: radial-gradient(1200px 800px at 20% 10%, rgba(120, 80, 255, .35), transparent 60%),
+              radial-gradient(900px 700px at 80% 20%, rgba(0, 255, 200, .22), transparent 55%),
+              radial-gradient(900px 700px at 60% 80%, rgba(255, 60, 200, .18), transparent 60%),
+              linear-gradient(135deg, #060817 0%, #050a12 40%, #07031a 100%);
+  isolation: isolate;
+}
+
+.home-glow{
+  position:absolute;
+  inset:-40%;
+  background: conic-gradient(from 180deg, rgba(0,255,200,.0), rgba(0,255,200,.18), rgba(140,0,255,.15), rgba(255,0,160,.12), rgba(0,255,200,.18), rgba(0,255,200,.0));
+  filter: blur(60px);
+  opacity: .9;
+  animation: homeSpin 18s linear infinite;
+  z-index: 0;
+}
+
+@keyframes homeSpin { to { transform: rotate(360deg); } }
+
+.home-stars{
+  position:absolute;
+  inset:0;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,.85) 50%, transparent 52%),
+    radial-gradient(1px 1px at 72% 34%, rgba(255,255,255,.75) 50%, transparent 52%),
+    radial-gradient(1px 1px at 44% 66%, rgba(255,255,255,.7) 50%, transparent 52%),
+    radial-gradient(1px 1px at 88% 78%, rgba(255,255,255,.6) 50%, transparent 52%),
+    radial-gradient(1px 1px at 26% 82%, rgba(255,255,255,.65) 50%, transparent 52%),
+    radial-gradient(1px 1px at 8% 58%, rgba(255,255,255,.55) 50%, transparent 52%);
+  opacity: .7;
+  animation: homeTwinkle 4.5s ease-in-out infinite alternate;
+  z-index: 1;
+}
+
+@keyframes homeTwinkle {
+  from { opacity: .45; transform: translateY(0); }
+  to   { opacity: .8;  transform: translateY(-6px); }
+}
+
+.home-content{
+  position: relative;
+  z-index: 2;
+  max-width: 980px;
+  text-align: center;
+}
+
+.home-kicker{
+  letter-spacing: .18em;
+  font-size: .82rem;
+  opacity: .9;
+  color: rgba(220,240,255,.85);
+}
+
+.home-title{
+  margin: .5rem 0 .35rem;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  color: #ffffff;
+  text-shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+
+.home-subtitle{
+  margin: 0 auto 1.6rem;
+  max-width: 52ch;
+  font-size: 1.15rem;
+  color: rgba(220,240,255,.82);
+}
+
+.home-actions{
+  display:flex;
+  gap: .8rem;
+  justify-content:center;
+  flex-wrap: wrap;
+  margin-top: .4rem;
+}
+
+.home-btn{
+  display:inline-block;
+  padding: .8rem 1.15rem;
+  border-radius: 999px;
+  text-decoration:none;
+  font-weight: 650;
+  border: 1px solid rgba(255,255,255,.18);
+  backdrop-filter: blur(10px);
+}
+
+.home-btn-primary{
+  background: linear-gradient(135deg, rgba(0,255,200,.85), rgba(140,0,255,.75));
+  color: #07101a;
+}
+
+.home-btn-ghost{
+  background: rgba(255,255,255,.06);
+  color: rgba(240,250,255,.95);
+}
+
+.home-btn:hover{
+  transform: translateY(-1px);
+  transition: transform .15s ease;
+}
+
+.home-card{
+  border-radius: 16px;
+  padding: 1.25rem 1.25rem 1.1rem;
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: 0 18px 40px rgba(0,0,0,.18);
+  backdrop-filter: blur(10px);
+  height: 100%;
+}
+
+.home-card-title{
+  font-weight: 800;
+  margin-bottom: .4rem;
+}
+
+.home-card-text{
+  opacity: .85;
+  margin-bottom: .9rem;
+}
+
+.home-card-link{
+  text-decoration:none;
+  font-weight: 700;
+}

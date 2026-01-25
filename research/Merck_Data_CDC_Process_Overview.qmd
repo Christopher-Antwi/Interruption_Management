@@ -80,29 +80,29 @@ Each Blending unit is a combination of two mixing systems:
 
 -   Stability and Variable Flow Rate:
 -   Compressibility and Shear at 6 kpa:
--   Need to analyze the challenges associated with predicting powder flowability and how understanding powder behaviour can benefit process performance.
+-   Need to analyze the challenges associated with predicting powder flowability and how understanding powder behavior can benefit process performance.
 
 ![](/assets/img/FT4%20Pic%203.png)
 
 ## Input/Raw Materials & Entry Points
 
--   Active Pharmaceutical Ingredient (API)
+-   Active Pharmaceutical Ingredient (API): **Acetaminophen**
 
--   Diluents: Microcrystalline Ceullulose & Anhydrous Dicalcium Phosphate
+-   Diluents: **Microcrystalline Ceullulose** & **Anhydrous Dicalcium Phosphate**
 
--   Disintegrants: Crosarmellose Sodium
+-   Disintegrants: **Crosarmellose Sodium**
 
--   Lubricants: Magnesium Stearate & Sodium Stearyl Fumarate
+-   Lubricants: **Magnesium Stearate** & **Sodium Stearyl Fumarate**
 
--   LiW Feeder 1 & 4: Microcrystalline Cellulose (diluent)
+-   LiW Feeder 1 & 4: **Microcrystalline Cellulose**
 
--   LiW Feeder 2: Spray-Dried Lactose (diluent)
+-   LiW Feeder 2: **Spray-Dried Lactose**
 
--   LiW Feeder 3: Active Pharmaceutical Ingredient (API)
+-   LiW Feeder 3: **Acetaminophen**
 
--   LiW Feeder 5: Sodium Croscarmellose (disintegrant)
+-   LiW Feeder 5: **Sodium Croscarmellose**
 
--   LiW Feeder 7: Magnesium Stearate (lubricant)
+-   LiW Feeder 7: **Magnesium Stearate**
 
 ## Process Steps
 
