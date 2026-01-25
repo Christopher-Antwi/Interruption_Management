@@ -1,0 +1,122 @@
+---
+title: "Logbook Long Run Analysis"
+format: html
+editor: visual
+---
+
+The Logbook Long Run Days was included as an optional portion of the data that was included as an online appendix. This excel file consists of 6 different sheets, one for each day of the study ( 1-12-18 - 1-17-18), which each contain a daily log of important events for each of the operations. They provided this file to help contextualize unexpected events or patterns that can be observed in the data.
+
+## Breakdown: What's In The LogBook?
+
+This logbook was utilized as the medium in which operators recorded notes on important events for each of the operations if/when they occurred. The operators are instructed to fill out the logbook daily as follows:
+
+*Guidelines of Events to be Captured* (What Types of Events Should Be Recorded?)
+
+-   Major Alarms/Events
+
+-   Diversions
+
+-   Major Shifts in Trend
+
+-   PAT Concerns from Mano
+
+-   Note WHEN and WHAT type of Cleaning
+
+-   Interventions
+
+-   Noticeable Changes When Changing Lots of Raw Material
+
+-   New Lot Numbers Added (NPI)
+
+*To-Do*
+
+-   Add Context and Interpretation Where Possible For Future Analysis by Others NOT on The Floor
+
+-   Send Daily Updates
+
+-   Video Walkdown from the Process for the CDC-50 from the Raw Material Perspective
+
+They are instructed to use these guidelines to complete the tables located on the daily sheet, which are separated into two distinct tables.
+
+Due to the tables being split, I had to perform a small amount of spreadsheet engineering. I did this by splitting the daily sheet into two distinct tables so they could be handled separately prior to being handled together.
+
+Due to the format of the log book *(which is presumed to have been designed for use and not integration)*, I created individual workbooks for each day and split the two tables, which I labeled **Critical Process Parameters (CPP)** & **Critical Quality Attributes (CQA)**, into separate sheets. I do plan on changing the names of these workbooks when I find a better name as those aren't exactly what those sheets are. Below is a zoomed in example of the original formats for CPP & CQA followed directly by the updated formats.
+
+After preprocessing the log books, I then loaded the 6 Workbooks (12 Total Sheets) into R. Here I consolidated these files into a single data frame which I "flattened" which was used to create Long_Logbook_Data which I plan to use as the corpus in my analysis.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+library(readxl)
+library(DT)
+library(here)
+long_Logbook_Data = read_excel(here("data","processed","long_logbook_data.xlsx"))
+DT::datatable(
+  long_Logbook_Data,
+  rownames = FALSE,
+  filter = "top",
+  extensions = c("Scroller", "Buttons"),
+  options = list(
+    dom = "Bfrtip",
+    buttons = c("copy", "csv", "excel"),
+    deferRender = TRUE,
+    scrollX = TRUE,
+    scrollY = "600px",
+    pagelength = 15,
+    lengthMenu = c(10, 15, 25, 50, 100)
+  )
+)
+```
+
+Based on this I identified 173 "Exogenous" Interruptions with the Operation **Feeding** consisting of 44.5% of the failure instances, with most of the comments in this stage referencing **APAP** or **Acetaminophen** commonly known as **Tylenol**. I don't believe a sentiment analysis would be appropriate for this type of analysis as it should be utilized to identify or interpret the emotional tone of the expressed text. I will explore how the **Failure Mode and Effects Analysis (FMEA)** methodology can be utilized to control the overall process. With almost half of the failure instances occurring or being related to **LiW Feeders**, I have began to think about the process overall, if the **LiW Feeders** can be controlled, can the overall process be controlled? **I am not entire surely how to go about conducting this analysis and was hoping to get help or feedback that could point me in the right direction?** I will begin by looking deeper into the **LiW Feeders**, first into the Endogenuous Interruptions identified by **(Shao et al. 2025)** to see what could have potentially caused the machine to stop or go out of control.
+
+Based on the figures from **LiW Feeder 1** & **LiW Feeder 5**
+
+At first glance, this depicts a major drop on January 15th and from the log book we can begin to tell the story that
+
+at 5 AM: *Pit Stop -Vacuum B1 & B2 feeder Manifolds. Prior to pit stop it was noticed that PD1 was showing disturbances. Pulled back feeder and saw there was no bridging, but powder beneath the feeder barren and the manifold. (AG)*
+
+So, we can see they were able to identify an issue based on "disturbances" and intiated a stop to vacuum the material out of the feeder, which explains the total drop in mass.
+
+and they believed to have gotten the situation under control later to deal with a subsequent interruption
+
+at 6:30 AM: *Totalizer info lost for entire campaign - due to software glitch on the lab CDC. Campaign totals restarted and reset to zero. Feeders stopped at 1048576.000g at slightly diferent times. Progress can still be traced through Mag St Total and or qty API dispensed. This issue is being worked on for the Cramlington system. (PO)*
+
+Here they lost their Totalizer information due to a system error but are using Mag St & the amount of APAPP dispense to give them a trusted estimate.
+
+As you can see there is a time cascading effect, if there is not enough mass coming from **LiW Feeder 1**, **LiW Feeder 5** will be the recipient of the lower mass flowing through the entire CDC and as a result the tablet compression system has to operate slower which in theory is reducing capacity as the entire rig is supposed to be continuous.
+
+### Tablet Input Materials
+
+-   Active Pharmaceutical Ingredient (API): **Acetaminophen** AKA **Tylenol**
+
+    The chemical compound responsible for producing the intended pharmacological effect in the person. During compression API must be uniformly distributed within the powder blend to ensure does uniformity and consistent potency in every tablet.
+
+-   Diluents: **Microcrystalline Ceullulose** & **Anhydrous Dicalcium Phosphate**
+
+    Diluents increase the bulk of the formulation so the tablet reaches a practical size for handling and compression. They can also improve the flow of powder, compressibility and strength of tablet
+
+-   Disintegrants: **Crosarmellose Sodium**
+
+    Disintegrants ensure that the tablet rapidly breads apart after ingestion so the API can dissolve and be absorbed by creating internal stresses when exposed to gastrointestinal fluids causing the tablet to grow and rupture,
+
+-   Lubricants: **Magnesium Stearate** & **Sodium Stearyl Fumarate**
+
+    Lubricants will reduce friction between the powder and metal surfaces of the die wall and punches. Essentially helps it flow through the process by preventing sticking, reducing ejection force and protects the tooling itself from wear and tear.
+
+LiW Feeder 1 **Microcrystalline Cellulose (Diluent) Lot No. 71734C & Avicel PH102 () Lot No. 71732C**
+
+LiW Feeder 2 **Spray-Dried Lactose, Fast Flo 316 (Diluent) Lot No. 637517L052**
+
+LiW Feeder 3 **Active Pharmaceutical Ingredient (API) Acetaminophen Powder, APAP_P Tylenol**
+
+LiW Feeder 4 **Microcrystalline Cellulose Lot No. 71734C & Avicel PH102 (Diluent) & Lot No. 71732C**
+
+LiW Feeder 5 **Sodium Croscarmellose, Ac-di-sol SD-711 (Disintegrant) Lot No. T1726C**
+
+LiW Feeder 7 **Magnesium Stearate, Ligamed MF-2-V (Lubricant) Lot No. 31400041**
+
+I am also exploring the **Supervisory Control Theory (SCT)**, which models the system as a set of discrete events and automatically generates a supervisor that ensures safe and correct operation. I will continue to explore through the **AutoFactory** *(Boudribila, Tajer, and Boulghasoul 2025)* dataset, an open-access resource that includes manually written requirement specifications. Which I believe is the correct method, by training the Model/AI with requirement specifications you should be able to rely and incorporate this "supervisory" module/software as it will have knowledge and continue to learn more about the process. **AutoFactory** enables the extraction and classification of components such as actuators, preactuators, **sensors**, and **control commands**. It provides the necessary foundation for training AI models to understand control logic from natural langauge descriptions, which right now is text from the operator logbook. I believe that even revising the structure/format of the logbook would improve the overall process. Right now the logbook is hard to read as it is not very user friendly, the logbook is defaulted to scroll to the next day which makes sense for the operators entering in information. Minor adjustments to the LogBook should include all input fields fit on a single page/screen, standardized inputs with only a single freeform field text would be beneficial to both the system and the module as it would reduce the amount for potentially both the Autofactory and Operator on site. Autofactory would learn more about the system failures, faster based on the reduction of variable inputs. Operators could potentially pick up speed in failure detection and prevention as they would be able to see more information at once, giving them a bigger picture of what has happened prior to them being there. Normally, the person designated as the Control Designer must read the text, identify key components, and define control logic without any automated support. *(Boudribila et al. 2025)* also developed AutoLabel- NER, a local labelling tool designed to ensure data privacy and make the annotation process easier. The tool features a simple interface and can be adapted to various domains by changing the tag definitions, making it suitable for awide range of *Named Entity Recognition (NER)* tasks.
+
+In comparison to the *Interrupted Continuity Paper*, they integrated and aligned all the interruptions identified through machine data where they recorded 272 Exogenous stops where 98.5% of the instances occurred in the **Feeding** stage. They identified their *Interruptions* binary variable through the logbook stoppages that are aligned with machine stoppages. Exogenous **Machine Stoppages** were identified by them as " key process parameters in machine data such as mass flow measurements and filling shoe speeds". From here, they determined that *Filing Shoe Speed* serves as an effective proxy for productivity as it directly affects the overall tablet production throughput (Sinka et al. 2009). **Filling shoe speed determines the rate at which powder is fed into die cavities**.

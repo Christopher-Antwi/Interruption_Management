@@ -1,24 +1,24 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Interruption_Management",
+    "objectID": "research/Logbook_Long_Run_Analysis.html",
+    "href": "research/Logbook_Long_Run_Analysis.html",
+    "title": "Logbook Long Run Analysis",
     "section": "",
-    "text": "Interruption Management Analysis"
+    "text": "The Logbook Long Run Days was included as an optional portion of the data that was included as an online appendix. This excel file consists of 6 different sheets, one for each day of the study ( 1-12-18 - 1-17-18), which each contain a daily log of important events for each of the operations. They provided this file to help contextualize unexpected events or patterns that can be observed in the data."
   },
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "About this site\n\n1 + 1\n\n[1] 2"
+    "objectID": "research/Logbook_Long_Run_Analysis.html#breakdown-whats-in-the-logbook",
+    "href": "research/Logbook_Long_Run_Analysis.html#breakdown-whats-in-the-logbook",
+    "title": "Logbook Long Run Analysis",
+    "section": "Breakdown: What’s In The LogBook?",
+    "text": "Breakdown: What’s In The LogBook?\nThis logbook was utilized as the medium in which operators recorded notes on important events for each of the operations if/when they occurred. The operators are instructed to fill out the logbook daily as follows:\nGuidelines of Events to be Captured (What Types of Events Should Be Recorded?)\n\nMajor Alarms/Events\nDiversions\nMajor Shifts in Trend\nPAT Concerns from Mano\nNote WHEN and WHAT type of Cleaning\nInterventions\nNoticeable Changes When Changing Lots of Raw Material\nNew Lot Numbers Added (NPI)\n\nTo-Do\n\nAdd Context and Interpretation Where Possible For Future Analysis by Others NOT on The Floor\nSend Daily Updates\nVideo Walkdown from the Process for the CDC-50 from the Raw Material Perspective\n\nThey are instructed to use these guidelines to complete the tables located on the daily sheet, which are separated into two distinct tables.\nDue to the tables being split, I had to perform a small amount of spreadsheet engineering. I did this by splitting the daily sheet into two distinct tables so they could be handled separately prior to being handled together.\nDue to the format of the log book (which is presumed to have been designed for use and not integration), I created individual workbooks for each day and split the two tables, which I labeled Critical Process Parameters (CPP) & Critical Quality Attributes (CQA), into separate sheets. I do plan on changing the names of these workbooks when I find a better name as those aren’t exactly what those sheets are. Below is a zoomed in example of the original formats for CPP & CQA followed directly by the updated formats.\nAfter preprocessing the log books, I then loaded the 6 Workbooks (12 Total Sheets) into R. Here I consolidated these files into a single data frame which I “flattened” which was used to create Long_Logbook_Data which I plan to use as the corpus in my analysis.\n\n\n\n\n\n\nBased on this I identified 173 “Exogenous” Interruptions with the Operation Feeding consisting of 44.5% of the failure instances, with most of the comments in this stage referencing APAP or Acetaminophen commonly known as Tylenol. I don’t believe a sentiment analysis would be appropriate for this type of analysis as it should be utilized to identify or interpret the emotional tone of the expressed text. I will explore how the Failure Mode and Effects Analysis (FMEA) methodology can be utilized to control the overall process. With almost half of the failure instances occurring or being related to LiW Feeders, I have began to think about the process overall, if the LiW Feeders can be controlled, can the overall process be controlled? I am not entire surely how to go about conducting this analysis and was hoping to get help or feedback that could point me in the right direction? I will begin by looking deeper into the LiW Feeders, first into the Endogenuous Interruptions identified by (Shao et al. 2025) to see what could have potentially caused the machine to stop or go out of control.\nBased on the figures from LiW Feeder 1 & LiW Feeder 5\nAt first glance, this depicts a major drop on January 15th and from the log book we can begin to tell the story that\nat 5 AM: Pit Stop -Vacuum B1 & B2 feeder Manifolds. Prior to pit stop it was noticed that PD1 was showing disturbances. Pulled back feeder and saw there was no bridging, but powder beneath the feeder barren and the manifold. (AG)\nSo, we can see they were able to identify an issue based on “disturbances” and intiated a stop to vacuum the material out of the feeder, which explains the total drop in mass.\nand they believed to have gotten the situation under control later to deal with a subsequent interruption\nat 6:30 AM: Totalizer info lost for entire campaign - due to software glitch on the lab CDC. Campaign totals restarted and reset to zero. Feeders stopped at 1048576.000g at slightly diferent times. Progress can still be traced through Mag St Total and or qty API dispensed. This issue is being worked on for the Cramlington system. (PO)\nHere they lost their Totalizer information due to a system error but are using Mag St & the amount of APAPP dispense to give them a trusted estimate.\nAs you can see there is a time cascading effect, if there is not enough mass coming from LiW Feeder 1, LiW Feeder 5 will be the recipient of the lower mass flowing through the entire CDC and as a result the tablet compression system has to operate slower which in theory is reducing capacity as the entire rig is supposed to be continuous.\n\nTablet Input Materials\n\nActive Pharmaceutical Ingredient (API): Acetaminophen AKA Tylenol\nThe chemical compound responsible for producing the intended pharmacological effect in the person. During compression API must be uniformly distributed within the powder blend to ensure does uniformity and consistent potency in every tablet.\nDiluents: Microcrystalline Ceullulose & Anhydrous Dicalcium Phosphate\nDiluents increase the bulk of the formulation so the tablet reaches a practical size for handling and compression. They can also improve the flow of powder, compressibility and strength of tablet\nDisintegrants: Crosarmellose Sodium\nDisintegrants ensure that the tablet rapidly breads apart after ingestion so the API can dissolve and be absorbed by creating internal stresses when exposed to gastrointestinal fluids causing the tablet to grow and rupture,\nLubricants: Magnesium Stearate & Sodium Stearyl Fumarate\nLubricants will reduce friction between the powder and metal surfaces of the die wall and punches. Essentially helps it flow through the process by preventing sticking, reducing ejection force and protects the tooling itself from wear and tear.\n\nLiW Feeder 1 Microcrystalline Cellulose (Diluent) Lot No. 71734C & Avicel PH102 () Lot No. 71732C\nLiW Feeder 2 Spray-Dried Lactose, Fast Flo 316 (Diluent) Lot No. 637517L052\nLiW Feeder 3 Active Pharmaceutical Ingredient (API) Acetaminophen Powder, APAP_P Tylenol\nLiW Feeder 4 Microcrystalline Cellulose Lot No. 71734C & Avicel PH102 (Diluent) & Lot No. 71732C\nLiW Feeder 5 Sodium Croscarmellose, Ac-di-sol SD-711 (Disintegrant) Lot No. T1726C\nLiW Feeder 7 Magnesium Stearate, Ligamed MF-2-V (Lubricant) Lot No. 31400041\nI am also exploring the Supervisory Control Theory (SCT), which models the system as a set of discrete events and automatically generates a supervisor that ensures safe and correct operation. I will continue to explore through the AutoFactory (Boudribila, Tajer, and Boulghasoul 2025) dataset, an open-access resource that includes manually written requirement specifications. Which I believe is the correct method, by training the Model/AI with requirement specifications you should be able to rely and incorporate this “supervisory” module/software as it will have knowledge and continue to learn more about the process. AutoFactory enables the extraction and classification of components such as actuators, preactuators, sensors, and control commands. It provides the necessary foundation for training AI models to understand control logic from natural langauge descriptions, which right now is text from the operator logbook. I believe that even revising the structure/format of the logbook would improve the overall process. Right now the logbook is hard to read as it is not very user friendly, the logbook is defaulted to scroll to the next day which makes sense for the operators entering in information. Minor adjustments to the LogBook should include all input fields fit on a single page/screen, standardized inputs with only a single freeform field text would be beneficial to both the system and the module as it would reduce the amount for potentially both the Autofactory and Operator on site. Autofactory would learn more about the system failures, faster based on the reduction of variable inputs. Operators could potentially pick up speed in failure detection and prevention as they would be able to see more information at once, giving them a bigger picture of what has happened prior to them being there. Normally, the person designated as the Control Designer must read the text, identify key components, and define control logic without any automated support. (Boudribila et al. 2025) also developed AutoLabel- NER, a local labelling tool designed to ensure data privacy and make the annotation process easier. The tool features a simple interface and can be adapted to various domains by changing the tag definitions, making it suitable for awide range of Named Entity Recognition (NER) tasks.\nIn comparison to the Interrupted Continuity Paper, they integrated and aligned all the interruptions identified through machine data where they recorded 272 Exogenous stops where 98.5% of the instances occurred in the Feeding stage. They identified their Interruptions binary variable through the logbook stoppages that are aligned with machine stoppages. Exogenous Machine Stoppages were identified by them as ” key process parameters in machine data such as mass flow measurements and filling shoe speeds”. From here, they determined that Filing Shoe Speed serves as an effective proxy for productivity as it directly affects the overall tablet production throughput (Sinka et al. 2009). Filling shoe speed determines the rate at which powder is fed into die cavities."
   },
   {
-    "objectID": "CV.html",
-    "href": "CV.html",
-    "title": "CV",
+    "objectID": "Projects.html",
+    "href": "Projects.html",
+    "title": "Projects",
     "section": "",
-    "text": "Coming soon"
+    "text": "Coming soon."
   },
   {
     "objectID": "Notes.html",
@@ -28,10 +28,157 @@
     "text": "Coming soon"
   },
   {
-    "objectID": "Projects.html",
-    "href": "Projects.html",
-    "title": "Projects",
+    "objectID": "CV.html",
+    "href": "CV.html",
+    "title": "CV",
     "section": "",
-    "text": "Coming soon."
+    "text": "Coming soon"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Interruption_Management",
+    "section": "",
+    "text": "Interruption Management Analysis"
+  },
+  {
+    "objectID": "research/LiW_Principle_Component_Analysis.html",
+    "href": "research/LiW_Principle_Component_Analysis.html",
+    "title": "Loss-in-Weight Feeder PCA",
+    "section": "",
+    "text": "In order to optimize an Oral Solid Dose (OSD) Continuous Direct Compression (CDC) process, it is imperative to understand all of the variability that have an impact of the drug quality attributes. A Continuous Direct Compression system is an integrated close-coupled system that minimizes powder flow path by continuously feeding individual formulation components into a continuous blender and transferring the final powder blend into the tablet press. It is important to note the LiW Feeders are widely accepted and used in the pharmaceutical industry due to the amount of gravimetric control they provide of the material that is being feed into the blender. LiW Feeders allow material to be fed at a target mass flow rate that can be controlled which is vital as LiW Feeder performance is key in meeting blend and content uniformity (F.Tahir et al) . A LiW Feeder uses the feed pactor profile as reference to calculate the correct screw speed for delivering the powder mass flow rate at the target set point during volumetric mode. A feed factor is typically measured for a given material at a single screw speed and then the profile across the entire hopper of material by running at a mass flow rate set-point in the gravimetric mode. Once a measurement is taken, the feed factor profile can guide or enable equipment configuration like refill optimization and gearbox selection. Feed factor helps indicate changing material properties within the hopper.\nFeed Factor: \\(FF = \\frac{m(t)}{SS}\\)\nwhere \\(m(t)\\) denotes the mass flowrate in g/min\nand \\(SS\\) is the screw speed measured in Rotations Per Minute\nPrincipal component analysis, or PCA, reduces the number of dimensions in large datasets to principal components that retain most of the original information. It does this by transforming potentially correlated variables into a smaller set of variables, called principal components. PCA is a commonly used approach within regression analysis but it is also leveraged for a variety of use cases, such as pattern recognition, signal processing, image processing, and more (IBM).\nSingular value compression in PCA is the optimal low rank approximation of the centered data matrix obtained by truncating its SVD, yielding orthogonal latent variables that capture maximal variance and represent the dominant physical modes of the system while discarding noise.\n\\(X \\in R^{n x p}\\)\nWhere:\n\\(n\\) = time\n\\(p\\) = LiW Variables"
+  },
+  {
+    "objectID": "research/LiW_Principle_Component_Analysis.html#pca-summary",
+    "href": "research/LiW_Principle_Component_Analysis.html#pca-summary",
+    "title": "Loss-in-Weight Feeder PCA",
+    "section": "PCA Summary",
+    "text": "PCA Summary\n\nPCA Summary\n\n\n\n\n\n\n\n\n\n\nPC\nStd..Deviation\nProportion.of.Variance\nCumulative.Proportion\n\n\n\n\nPC1\nPC1\n3.507\n0.3416\n0.3416\n\n\nPC2\nPC2\n1.833\n0.0933\n0.4349\n\n\nPC3\nPC3\n1.389\n0.0536\n0.4885\n\n\nPC4\nPC4\n1.362\n0.0515\n0.5400\n\n\nPC5\nPC5\n1.312\n0.0478\n0.5878\n\n\nPC6\nPC6\n1.271\n0.0449\n0.6327\n\n\nPC7\nPC7\n1.235\n0.0424\n0.6751\n\n\nPC8\nPC8\n1.172\n0.0382\n0.7133\n\n\nPC9\nPC9\n1.147\n0.0365\n0.7498\n\n\nPC10\nPC10\n1.114\n0.0345\n0.7842\n\n\nPC11\nPC11\n1.002\n0.0279\n0.8121\n\n\nPC12\nPC12\n0.992\n0.0273\n0.8395\n\n\nPC13\nPC13\n0.940\n0.0246\n0.8640\n\n\nPC14\nPC14\n0.845\n0.0198\n0.8838\n\n\nPC15\nPC15\n0.828\n0.0191\n0.9029\n\n\nPC16\nPC16\n0.770\n0.0165\n0.9194\n\n\nPC17\nPC17\n0.757\n0.0159\n0.9353\n\n\nPC18\nPC18\n0.717\n0.0143\n0.9496\n\n\nPC19\nPC19\n0.684\n0.0130\n0.9626\n\n\nPC20\nPC20\n0.616\n0.0106\n0.9731\n\n\nPC21\nPC21\n0.566\n0.0089\n0.9820\n\n\nPC22\nPC22\n0.447\n0.0055\n0.9876\n\n\nPC23\nPC23\n0.388\n0.0042\n0.9918\n\n\nPC24\nPC24\n0.305\n0.0026\n0.9944\n\n\nPC25\nPC25\n0.188\n0.0010\n0.9953\n\n\nPC26\nPC26\n0.180\n0.0009\n0.9962\n\n\nPC27\nPC27\n0.171\n0.0008\n0.9971\n\n\nPC28\nPC28\n0.158\n0.0007\n0.9978\n\n\nPC29\nPC29\n0.138\n0.0005\n0.9983\n\n\nPC30\nPC30\n0.128\n0.0005\n0.9987\n\n\nPC31\nPC31\n0.108\n0.0003\n0.9991\n\n\nPC32\nPC32\n0.105\n0.0003\n0.9994\n\n\nPC33\nPC33\n0.099\n0.0003\n0.9996\n\n\nPC34\nPC34\n0.079\n0.0002\n0.9998\n\n\nPC35\nPC35\n0.067\n0.0001\n0.9999\n\n\nPC36\nPC36\n0.046\n0.0001\n1.0000"
+  },
+  {
+    "objectID": "research/LiW_Principle_Component_Analysis.html#scree-plot",
+    "href": "research/LiW_Principle_Component_Analysis.html#scree-plot",
+    "title": "Loss-in-Weight Feeder PCA",
+    "section": "Scree Plot",
+    "text": "Scree Plot\nUtilized this to determine how many principle components would potentially be useful.\n\n\n\nLoss in Weight Feeders Scree Plot\n\n\n\n\n\nPCA Scores Plot"
+  },
+  {
+    "objectID": "research/LiW_Principle_Component_Analysis.html#pca-loadingseigenvectors",
+    "href": "research/LiW_Principle_Component_Analysis.html#pca-loadingseigenvectors",
+    "title": "Loss-in-Weight Feeder PCA",
+    "section": "PCA Loadings/Eigenvectors",
+    "text": "PCA Loadings/Eigenvectors\n\n\n\n\n\nLiW PC1\n\n\n\n\n   \n\n\n\n\n\n\n\n\nLiW PC4"
+  },
+  {
+    "objectID": "research/LiW_Principle_Component_Analysis.html#pca-scores-3d",
+    "href": "research/LiW_Principle_Component_Analysis.html#pca-scores-3d",
+    "title": "Loss-in-Weight Feeder PCA",
+    "section": "PCA Scores (3D)",
+    "text": "PCA Scores (3D)"
+  },
+  {
+    "objectID": "research/LiW_Principle_Component_Analysis.html#pca-loadings-3d-scaled",
+    "href": "research/LiW_Principle_Component_Analysis.html#pca-loadings-3d-scaled",
+    "title": "Loss-in-Weight Feeder PCA",
+    "section": "PCA Loadings (3D, Scaled)",
+    "text": "PCA Loadings (3D, Scaled)"
+  },
+  {
+    "objectID": "research/LiW_Principle_Component_Analysis.html#pca-biplot-3d",
+    "href": "research/LiW_Principle_Component_Analysis.html#pca-biplot-3d",
+    "title": "Loss-in-Weight Feeder PCA",
+    "section": "PCA Biplot (3D)",
+    "text": "PCA Biplot (3D)\nPCA Scores (3D)\n\n\nPCA Loadings (3D, Scaled)\n\n\nPCA Biplot (3D)"
+  },
+  {
+    "objectID": "research/Merck_Data_CDC_Process_Overview.html",
+    "href": "research/Merck_Data_CDC_Process_Overview.html",
+    "title": "Merck_Data_CDC_Process_Overview",
+    "section": "",
+    "text": "This specific data set consists of 10 worksheets of data collected from a 120 hour study in which Machine Level & Contextual Quality data was collected to asses the effects of raw material changes during the study.\nOriginal worksheets: LiW Feeders 1, LiW Feeders 2, Blenders, Tablet Press, Humidity, Temperature, RM Tablet Properties and Drum Change, RM Content Uniformity, RM Material Properties, Logbook Long Run Days\nThe LiW feeders are used to continuously feed individual raw materials into the inlet of the first blender.\nHere the now in-process materials, which we will now refer too as powder, flows through the first blender which is (ideally) optimizied based on the setup of the mixing blades & product type configurations (Recipe, Volume, etc) to control the amount of shear imparted on the powder which is imperative to ensure the mixing is sufficient enough.\nUpon exit of Blender 1, which is directly coupled to the inlet of a Blender 2 along with a LiW Feeder for the lubricant.\nBlender 2 is responsible for the blending of any components of the formulation which are shear sensitive such as in this case is the lubricant.\nHaving two blending stages allows for maximum flexibility within a process as it allows for these two blending stages to be decoupled.\nBlender 2 was configured to minimize shear and in process material Mean Residence Time (MRT). In the case of lubrication blending this minimizes the risk of over lubrication of the blend, which can lead to issues with the final product.\n\n\n\nConsiGma 116 TM CDC-50 (GEA Group, Wommelgem, Belgium)\n\n\n\nGEA CDC 50 Rig\n\n\nThe GEA CDC-50 Rig was constructed by integrating three units into a single processing platform. This was done by combining the GEA LiW Feeding System with ConsiGma Dosing and Blending (DB) Modules as well as the Nexgen Press Range. \nGEA LIW Loss in Weight Feeder\n\n\n\nLoss-in-Weight Feeder\n\n\n\n\n\nLoss-in-Weight Feeder Specifications\n\n\nThe LiW Feeder is able to measure the loss in weight through a discharge device that withdraws material from the hopper and meters it to a downstream process. The weighing mechanism or scale weighs the all material in the Hopper, The Hopper Itself, and The Discharge Device itself but, Doesn’t Weigh Components in The Inactive Section. When the weighing mechanism’s weight reading changes, the controller can direct the motor speed controller on the discharge device to deliver more or less material to the process. When the material level in the hopper reaches or falls below a specified threshold, the controller signals for a refilling agent (Automatically or Human) to refill the hopper. The controller ensures that material continues to feed the process while the hopper is refilling. As the discharge device moves material from the hopper into the downstream process, the weight of material in the hopper decreases. The controller evaluates the amount of LiW sensed by the weighing mechanism over a given time interval to determine the Feedrate. The controller adjusts the discharge device’s speed via the motor speed controller to either increase or decrease the loss in weight which is the Feedrate.\nConsiGma Dosing and Blending (DB) Modules\n\n\n\nLoss-in-Weight Feeder and Blender Connection\n\n\nEach Blending unit is a combination of two mixing systems:\n\nPlug Flow Reactor - Segregated Mixing System\nContinuous Stirred Tank Reactor - Well-Mixed System as Reactors\n\n\n\n\nPlug Flow Reactor Diagram\n\n\nNexgen Press Range\n\n\n\nTablet Press\n\n\nNexGen Press Process Steps:\n1. Fill: Powder fills a die cavity.\n2. Pre-Compress: Upper and lower punches apply pressure, influenced by the Air Compensator, for uniform filling.\n3. Main Compression: Punches apply significant force, again regulated by the Air Compensator, forming the tablet.\n4. Eject: The finished tablet is ejected, ready for downstream processing.\n\n\n\nFT4 Powder Rheometer\n\n\n\n\n\nFT4 Powder Rheometer Technology\n\n\n\nStability and Variable Flow Rate:\nCompressibility and Shear at 6 kpa:\nNeed to analyze the challenges associated with predicting powder flowability and how understanding powder behaviour can benefit process performance.\n\n\n\n\n\n\nActive Pharmaceutical Ingredient (API)\nDiluents: Microcrystalline Ceullulose & Anhydrous Dicalcium Phosphate\nDisintegrants: Crosarmellose Sodium\nLubricants: Magnesium Stearate & Sodium Stearyl Fumarate\nLiW Feeder 1 & 4: Microcrystalline Cellulose (diluent)\nLiW Feeder 2: Spray-Dried Lactose (diluent)\nLiW Feeder 3: Active Pharmaceutical Ingredient (API)\nLiW Feeder 5: Sodium Croscarmellose (disintegrant)\nLiW Feeder 7: Magnesium Stearate (lubricant)\n\n\n\n\n\n  \n  \n    1) Raw Material Feeding\n    Loss-in-Weight (LiW) Feeders\n  \n\n  →\n\n  \n    2) Initial Blending\n    Blender 1\n  \n\n  →\n\n  \n    3) Lubricant + Final Blending\n    Lubricant Addition → Blender 2\n  \n\n  →\n\n  \n    4) Compression\n    Nexgen Tablet Press\n  \n\n  →\n\n  \n    5) In-Process QC\n    Weight • Hardness • CU\n  \n\n  →\n\n  \n    6) Final Coating\n    Coating Stage\n  \n\n\n\n\n\nRaw materials are continuously introduced into the manufacturing line using loss-in-weight (LiW) feeders, which gravimetrically control material flow by measuring weight loss over time. Each feeder maintains a target mass flow rate, ensuring accurate material ratios and steady-state operation.\nFive LiW feeders (PD1–PD5) deliver individual powder components into the first continuous blender. Feeder control systems dynamically adjust operating parameters, such as screw speed, to correct deviations from desired flow rates and maintain consistent feeding.\n\n\n\nThe material streams from PD1–PD5 enter Blender 1, where powders are combined and mixed under continuous operation. This blender provides sufficient residence time and shear to produce a homogeneous intermediate blend.\nUnder normal operating conditions, the outlet mass flow rate of Blender 1 matches the total inflow from the upstream feeders, indicating steady-state behavior.\n\n\n\nThe output of Blender 1 feeds directly into Blender 2, where the final blend is prepared. At this stage, a separate LiW feeder (PD7) introduces the lubricant into the powder stream.\nBlender 2 ensures uniform distribution of the lubricant throughout the blend while minimizing over-lubrication. In steady operation, the mass flow exiting Blender 2 equals the sum of the Blender 1 outflow and the lubricant feeder inflow.\n\n\n\nThe final powder blend exits Blender 2 and is transferred to a rotary tablet press, where it is compacted into tablets. Tablet formation occurs in two main stages:\n\nPre-compression, during which the powder is lightly compacted as the bottom punch moves upward while the upper punch remains fixed.\nMain compression, where higher compression forces are applied to form tablets with the desired weight, thickness, and mechanical strength.\n\nTablet press control systems adjust parameters such as compression force and die fill depth to ensure consistent tablet quality.\n\n\n\nAfter compression, tablets are routed based on real-time quality assessment:\n\nAccepted tablets that meet predefined quality specifications proceed to the coating unit.\nRejected tablets that fall outside acceptable limits are diverted from the process.\nSampled tablets are periodically removed for offline quality testing, including weight, thickness, and hardness measurements.\n\n\n\n\nAccepted core tablets are transferred to a continuous tablet coater, where a thin film coating is applied. This step improves tablet stability, appearance, and functionality while maintaining continuous material flow through the manufacturing line.\n\n\n\nLiW feeders employ local feedback control to maintain accurate mass flow rates. Deviations from target conditions trigger automatic parameter adjustments to restore steady operation.\nThe tablet press utilizes local feedback control to regulate compression force and tablet weight. Tablets produced during periods of out-of-spec operation are automatically rejected.\nA residence time distribution (RTD) framework enables traceability of material through the system. When process disturbances or alarms occur, material produced during the affected time window is identified and classified as out-of-spec, ensuring robust quality assurance in continuous manufacturing.\n\n\n\n\n\n\nMapping Key Process Parameters to the Performance of a Continuous Dry Powder Blender in a Continuous Direct Compression System\nhttps://www.gea.com/en/assets/315946/\nhttps://merrick-inc.com/support/document-center/how-a-liw-feeder-works\nhttps://micromeritics.com/products/ft4-powder-rheometer/?utm_source=google&utm_medium=cpc&utm_campaign=EN%20-%20Search%20-%20Micromeritics&utm_term=ft4%20powder%20rheometer&utm_content=EN%20-%20Product%20-%20Freeman%20FT4&gad_source=1&gad_campaignid=22332900911&gclid=EAIaIQobChMIr_vEkbPRkQMVokRHAR0K4x83EAAYASAAEgIgZvD_BwE https://www.freemantech.co.uk/powder-testing/ft4-powder-rheometer-powder-flow-tester"
+  },
+  {
+    "objectID": "research/Merck_Data_CDC_Process_Overview.html#machinesequipment",
+    "href": "research/Merck_Data_CDC_Process_Overview.html#machinesequipment",
+    "title": "Merck_Data_CDC_Process_Overview",
+    "section": "",
+    "text": "ConsiGma 116 TM CDC-50 (GEA Group, Wommelgem, Belgium)\n\n\n\nGEA CDC 50 Rig\n\n\nThe GEA CDC-50 Rig was constructed by integrating three units into a single processing platform. This was done by combining the GEA LiW Feeding System with ConsiGma Dosing and Blending (DB) Modules as well as the Nexgen Press Range. \nGEA LIW Loss in Weight Feeder\n\n\n\nLoss-in-Weight Feeder\n\n\n\n\n\nLoss-in-Weight Feeder Specifications\n\n\nThe LiW Feeder is able to measure the loss in weight through a discharge device that withdraws material from the hopper and meters it to a downstream process. The weighing mechanism or scale weighs the all material in the Hopper, The Hopper Itself, and The Discharge Device itself but, Doesn’t Weigh Components in The Inactive Section. When the weighing mechanism’s weight reading changes, the controller can direct the motor speed controller on the discharge device to deliver more or less material to the process. When the material level in the hopper reaches or falls below a specified threshold, the controller signals for a refilling agent (Automatically or Human) to refill the hopper. The controller ensures that material continues to feed the process while the hopper is refilling. As the discharge device moves material from the hopper into the downstream process, the weight of material in the hopper decreases. The controller evaluates the amount of LiW sensed by the weighing mechanism over a given time interval to determine the Feedrate. The controller adjusts the discharge device’s speed via the motor speed controller to either increase or decrease the loss in weight which is the Feedrate.\nConsiGma Dosing and Blending (DB) Modules\n\n\n\nLoss-in-Weight Feeder and Blender Connection\n\n\nEach Blending unit is a combination of two mixing systems:\n\nPlug Flow Reactor - Segregated Mixing System\nContinuous Stirred Tank Reactor - Well-Mixed System as Reactors\n\n\n\n\nPlug Flow Reactor Diagram\n\n\nNexgen Press Range\n\n\n\nTablet Press\n\n\nNexGen Press Process Steps:\n1. Fill: Powder fills a die cavity.\n2. Pre-Compress: Upper and lower punches apply pressure, influenced by the Air Compensator, for uniform filling.\n3. Main Compression: Punches apply significant force, again regulated by the Air Compensator, forming the tablet.\n4. Eject: The finished tablet is ejected, ready for downstream processing.\n\n\n\nFT4 Powder Rheometer\n\n\n\n\n\nFT4 Powder Rheometer Technology\n\n\n\nStability and Variable Flow Rate:\nCompressibility and Shear at 6 kpa:\nNeed to analyze the challenges associated with predicting powder flowability and how understanding powder behaviour can benefit process performance."
+  },
+  {
+    "objectID": "research/Merck_Data_CDC_Process_Overview.html#inputraw-materials-entry-points",
+    "href": "research/Merck_Data_CDC_Process_Overview.html#inputraw-materials-entry-points",
+    "title": "Merck_Data_CDC_Process_Overview",
+    "section": "",
+    "text": "Active Pharmaceutical Ingredient (API)\nDiluents: Microcrystalline Ceullulose & Anhydrous Dicalcium Phosphate\nDisintegrants: Crosarmellose Sodium\nLubricants: Magnesium Stearate & Sodium Stearyl Fumarate\nLiW Feeder 1 & 4: Microcrystalline Cellulose (diluent)\nLiW Feeder 2: Spray-Dried Lactose (diluent)\nLiW Feeder 3: Active Pharmaceutical Ingredient (API)\nLiW Feeder 5: Sodium Croscarmellose (disintegrant)\nLiW Feeder 7: Magnesium Stearate (lubricant)"
+  },
+  {
+    "objectID": "research/Merck_Data_CDC_Process_Overview.html#process-steps",
+    "href": "research/Merck_Data_CDC_Process_Overview.html#process-steps",
+    "title": "Merck_Data_CDC_Process_Overview",
+    "section": "",
+    "text": "1) Raw Material Feeding\n    Loss-in-Weight (LiW) Feeders\n  \n\n  →\n\n  \n    2) Initial Blending\n    Blender 1\n  \n\n  →\n\n  \n    3) Lubricant + Final Blending\n    Lubricant Addition → Blender 2\n  \n\n  →\n\n  \n    4) Compression\n    Nexgen Tablet Press\n  \n\n  →\n\n  \n    5) In-Process QC\n    Weight • Hardness • CU\n  \n\n  →\n\n  \n    6) Final Coating\n    Coating Stage"
+  },
+  {
+    "objectID": "research/Merck_Data_CDC_Process_Overview.html#raw-material-feeding-loss-in-weight-feeders",
+    "href": "research/Merck_Data_CDC_Process_Overview.html#raw-material-feeding-loss-in-weight-feeders",
+    "title": "Merck_Data_CDC_Process_Overview",
+    "section": "",
+    "text": "Raw materials are continuously introduced into the manufacturing line using loss-in-weight (LiW) feeders, which gravimetrically control material flow by measuring weight loss over time. Each feeder maintains a target mass flow rate, ensuring accurate material ratios and steady-state operation.\nFive LiW feeders (PD1–PD5) deliver individual powder components into the first continuous blender. Feeder control systems dynamically adjust operating parameters, such as screw speed, to correct deviations from desired flow rates and maintain consistent feeding."
+  },
+  {
+    "objectID": "research/Merck_Data_CDC_Process_Overview.html#initial-blending-stage-blender-1",
+    "href": "research/Merck_Data_CDC_Process_Overview.html#initial-blending-stage-blender-1",
+    "title": "Merck_Data_CDC_Process_Overview",
+    "section": "",
+    "text": "The material streams from PD1–PD5 enter Blender 1, where powders are combined and mixed under continuous operation. This blender provides sufficient residence time and shear to produce a homogeneous intermediate blend.\nUnder normal operating conditions, the outlet mass flow rate of Blender 1 matches the total inflow from the upstream feeders, indicating steady-state behavior."
+  },
+  {
+    "objectID": "research/Merck_Data_CDC_Process_Overview.html#lubricant-addition-and-final-blending-stage-blender-2",
+    "href": "research/Merck_Data_CDC_Process_Overview.html#lubricant-addition-and-final-blending-stage-blender-2",
+    "title": "Merck_Data_CDC_Process_Overview",
+    "section": "",
+    "text": "The output of Blender 1 feeds directly into Blender 2, where the final blend is prepared. At this stage, a separate LiW feeder (PD7) introduces the lubricant into the powder stream.\nBlender 2 ensures uniform distribution of the lubricant throughout the blend while minimizing over-lubrication. In steady operation, the mass flow exiting Blender 2 equals the sum of the Blender 1 outflow and the lubricant feeder inflow."
+  },
+  {
+    "objectID": "research/Merck_Data_CDC_Process_Overview.html#nexgen-press-range-tablet-press",
+    "href": "research/Merck_Data_CDC_Process_Overview.html#nexgen-press-range-tablet-press",
+    "title": "Merck_Data_CDC_Process_Overview",
+    "section": "",
+    "text": "The final powder blend exits Blender 2 and is transferred to a rotary tablet press, where it is compacted into tablets. Tablet formation occurs in two main stages:\n\nPre-compression, during which the powder is lightly compacted as the bottom punch moves upward while the upper punch remains fixed.\nMain compression, where higher compression forces are applied to form tablets with the desired weight, thickness, and mechanical strength.\n\nTablet press control systems adjust parameters such as compression force and die fill depth to ensure consistent tablet quality."
+  },
+  {
+    "objectID": "research/Merck_Data_CDC_Process_Overview.html#tablet-routing-and-quality-control",
+    "href": "research/Merck_Data_CDC_Process_Overview.html#tablet-routing-and-quality-control",
+    "title": "Merck_Data_CDC_Process_Overview",
+    "section": "",
+    "text": "After compression, tablets are routed based on real-time quality assessment:\n\nAccepted tablets that meet predefined quality specifications proceed to the coating unit.\nRejected tablets that fall outside acceptable limits are diverted from the process.\nSampled tablets are periodically removed for offline quality testing, including weight, thickness, and hardness measurements."
+  },
+  {
+    "objectID": "research/Merck_Data_CDC_Process_Overview.html#tablet-coating",
+    "href": "research/Merck_Data_CDC_Process_Overview.html#tablet-coating",
+    "title": "Merck_Data_CDC_Process_Overview",
+    "section": "",
+    "text": "Accepted core tablets are transferred to a continuous tablet coater, where a thin film coating is applied. This step improves tablet stability, appearance, and functionality while maintaining continuous material flow through the manufacturing line."
+  },
+  {
+    "objectID": "research/Merck_Data_CDC_Process_Overview.html#process-monitoring-and-control-strategy",
+    "href": "research/Merck_Data_CDC_Process_Overview.html#process-monitoring-and-control-strategy",
+    "title": "Merck_Data_CDC_Process_Overview",
+    "section": "",
+    "text": "LiW feeders employ local feedback control to maintain accurate mass flow rates. Deviations from target conditions trigger automatic parameter adjustments to restore steady operation.\nThe tablet press utilizes local feedback control to regulate compression force and tablet weight. Tablets produced during periods of out-of-spec operation are automatically rejected.\nA residence time distribution (RTD) framework enables traceability of material through the system. When process disturbances or alarms occur, material produced during the affected time window is identified and classified as out-of-spec, ensuring robust quality assurance in continuous manufacturing."
+  },
+  {
+    "objectID": "research/Merck_Data_CDC_Process_Overview.html#links-1",
+    "href": "research/Merck_Data_CDC_Process_Overview.html#links-1",
+    "title": "Merck_Data_CDC_Process_Overview",
+    "section": "",
+    "text": "Mapping Key Process Parameters to the Performance of a Continuous Dry Powder Blender in a Continuous Direct Compression System\nhttps://www.gea.com/en/assets/315946/\nhttps://merrick-inc.com/support/document-center/how-a-liw-feeder-works\nhttps://micromeritics.com/products/ft4-powder-rheometer/?utm_source=google&utm_medium=cpc&utm_campaign=EN%20-%20Search%20-%20Micromeritics&utm_term=ft4%20powder%20rheometer&utm_content=EN%20-%20Product%20-%20Freeman%20FT4&gad_source=1&gad_campaignid=22332900911&gclid=EAIaIQobChMIr_vEkbPRkQMVokRHAR0K4x83EAAYASAAEgIgZvD_BwE https://www.freemantech.co.uk/powder-testing/ft4-powder-rheometer-powder-flow-tester"
   }
 ]

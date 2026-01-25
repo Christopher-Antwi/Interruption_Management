@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Merck_Data_CDC_Process_Overview – Christopher Antwi</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-e31584831b205ffbb2d98406f31c2a5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Christopher Antwi</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../Research.html"> 
+<span class="menu-text">Research</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../Projects.html"> 
+<span class="menu-text">Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../Papers.html"> 
+<span class="menu-text">Papers</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../Notes.html"> 
+<span class="menu-text">Notes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../CV.html"> 
+<span class="menu-text">CV</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#continuous-manufacturing-process-overview" id="toc-continuous-manufacturing-process-overview" class="nav-link active" data-scroll-target="#continuous-manufacturing-process-overview">Continuous Manufacturing Process Overview</a>
+  <ul class="collapse">
+  <li><a href="#machinesequipment" id="toc-machinesequipment" class="nav-link" data-scroll-target="#machinesequipment">Machines/Equipment</a></li>
+  <li><a href="#inputraw-materials-entry-points" id="toc-inputraw-materials-entry-points" class="nav-link" data-scroll-target="#inputraw-materials-entry-points">Input/Raw Materials &amp; Entry Points</a></li>
+  <li><a href="#process-steps" id="toc-process-steps" class="nav-link" data-scroll-target="#process-steps">Process Steps</a></li>
+  <li><a href="#raw-material-feeding-loss-in-weight-feeders" id="toc-raw-material-feeding-loss-in-weight-feeders" class="nav-link" data-scroll-target="#raw-material-feeding-loss-in-weight-feeders">Raw Material Feeding (Loss-in-Weight Feeders)</a></li>
+  <li><a href="#initial-blending-stage-blender-1" id="toc-initial-blending-stage-blender-1" class="nav-link" data-scroll-target="#initial-blending-stage-blender-1">Initial Blending Stage (Blender 1)</a></li>
+  <li><a href="#lubricant-addition-and-final-blending-stage-blender-2" id="toc-lubricant-addition-and-final-blending-stage-blender-2" class="nav-link" data-scroll-target="#lubricant-addition-and-final-blending-stage-blender-2">Lubricant Addition and Final Blending Stage (Blender 2)</a></li>
+  <li><a href="#nexgen-press-range-tablet-press" id="toc-nexgen-press-range-tablet-press" class="nav-link" data-scroll-target="#nexgen-press-range-tablet-press">Nexgen Press Range (Tablet Press)</a></li>
+  <li><a href="#tablet-routing-and-quality-control" id="toc-tablet-routing-and-quality-control" class="nav-link" data-scroll-target="#tablet-routing-and-quality-control">Tablet Routing and Quality Control</a></li>
+  <li><a href="#tablet-coating" id="toc-tablet-coating" class="nav-link" data-scroll-target="#tablet-coating">Tablet Coating</a></li>
+  <li><a href="#process-monitoring-and-control-strategy" id="toc-process-monitoring-and-control-strategy" class="nav-link" data-scroll-target="#process-monitoring-and-control-strategy">Process Monitoring and Control Strategy</a></li>
+  <li><a href="#links" id="toc-links" class="nav-link" data-scroll-target="#links">Links</a></li>
+  <li><a href="#links-1" id="toc-links-1" class="nav-link" data-scroll-target="#links-1">Links</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Merck_Data_CDC_Process_Overview</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="continuous-manufacturing-process-overview" class="level1">
+<h1>Continuous Manufacturing Process Overview</h1>
+<ul>
+<li>This specific data set consists of 10 worksheets of data collected from a 120 hour study in which <strong>Machine Level &amp; Contextual Quality</strong> data was collected to <strong>asses the effects of raw material changes</strong> during the study.</li>
+<li>Original worksheets: <strong>LiW Feeders 1, LiW Feeders 2, Blenders, Tablet Press, Humidity, Temperature, RM Tablet Properties and Drum Change, RM Content Uniformity, RM Material Properties, Logbook Long Run Days</strong></li>
+<li>The LiW feeders are used to continuously feed individual raw materials into the inlet of the first blender.</li>
+<li>Here the now in-process materials, which we will now refer too as powder, flows through the first blender which is (ideally) optimizied based on the setup of the mixing blades &amp; product type configurations (Recipe, Volume, etc) to control the amount of shear imparted on the powder which is imperative to ensure the mixing is sufficient enough.</li>
+<li>Upon exit of <strong>Blender 1</strong>, which is directly coupled to the inlet of a <strong>Blender 2</strong> along with a <strong>LiW Feeder</strong> for the lubricant.</li>
+<li><strong>Blender 2</strong> is responsible for the blending of any components of the formulation which are shear sensitive such as in this case is the lubricant.</li>
+<li>Having two blending stages allows for maximum flexibility within a process as it allows for these two blending stages to be decoupled.</li>
+<li><strong>Blender 2</strong> was configured to minimize shear and in process material <strong>Mean Residence Time (MRT)</strong>. In the case of lubrication blending this minimizes the risk of over lubrication of the blend, which can lead to issues with the final product.</li>
+</ul>
+<section id="machinesequipment" class="level2">
+<h2 class="anchored" data-anchor-id="machinesequipment">Machines/Equipment</h2>
+<p><strong>ConsiGma 116 TM CDC-50 (GEA Group, Wommelgem, Belgium)</strong></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="..\assets/img/GEA CDC 50 RIG.png" class="img-fluid figure-img"></p>
+<figcaption>GEA CDC 50 Rig</figcaption>
+</figure>
+</div>
+<p>The <strong>GEA CDC-50 Rig</strong> was constructed by integrating three units into a single processing platform. This was done by combining the <strong>GEA LiW Feeding System</strong> with <strong>ConsiGma Dosing and Blending (DB) Modules</strong> as well as the <strong>Nexgen Press Range</strong>. <br></p>
+<p><strong>GEA LIW Loss in Weight Feeder</strong></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="..\assets/img/LiW Feeder Example Pic 1.png" class="img-fluid figure-img"></p>
+<figcaption>Loss-in-Weight Feeder</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="..\assets/img/LiW Feeder Technical Example Picture.png" class="img-fluid figure-img"></p>
+<figcaption>Loss-in-Weight Feeder Specifications</figcaption>
+</figure>
+</div>
+<p>The LiW Feeder is able to measure the loss in weight through a discharge device that withdraws material from the hopper and meters it to a downstream process. The weighing mechanism or scale weighs the all material in the <strong>Hopper</strong>, <strong>The Hopper Itself</strong>, and <strong>The Discharge Device</strong> itself but, <strong>Doesn’t Weigh Components in The Inactive Section</strong>. When the weighing mechanism’s weight reading changes, the controller can direct the motor speed controller on the discharge device to deliver more or less material to the process. When the material level in the hopper reaches or falls below a specified threshold, the controller signals for a refilling agent (Automatically or Human) to refill the hopper. The controller ensures that material continues to feed the process while the hopper is refilling. As the discharge device moves material from the hopper into the downstream process, the weight of material in the hopper decreases. The controller evaluates the amount of <strong>LiW</strong> sensed by the weighing mechanism over a given time interval to determine the <strong>Feedrate</strong>. The controller adjusts the discharge device’s speed via the motor speed controller to either increase or decrease the loss in weight which is the <strong>Feedrate</strong>.</p>
+<p><strong>ConsiGma Dosing and Blending (DB) Modules</strong></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="..\assets/img/LiW and Blender Pic.png" class="img-fluid figure-img"></p>
+<figcaption>Loss-in-Weight Feeder and Blender Connection</figcaption>
+</figure>
+</div>
+<p>Each Blending unit is a combination of two mixing systems:</p>
+<ul>
+<li><p><strong>Plug Flow Reactor</strong> - Segregated Mixing System</p></li>
+<li><p><strong>Continuous Stirred Tank Reactor</strong> - Well-Mixed System as Reactors</p></li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="..\assets/img/Blender Mixing System Diagram.png" class="img-fluid figure-img"></p>
+<figcaption>Plug Flow Reactor Diagram</figcaption>
+</figure>
+</div>
+<p><strong>Nexgen Press Range</strong></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="..\assets/img/Tablet Press Example Pic.png" class="img-fluid figure-img"></p>
+<figcaption>Tablet Press</figcaption>
+</figure>
+</div>
+<p><strong>NexGen Press Process Steps:</strong></p>
+<p><strong>1.</strong> Fill: Powder fills a die cavity.</p>
+<p><strong>2.</strong> Pre-Compress: Upper and lower punches apply pressure, influenced by the Air Compensator, for uniform filling.</p>
+<p><strong>3.</strong> Main Compression: Punches apply significant force, again regulated by the Air Compensator, forming the tablet.</p>
+<p><strong>4.</strong> Eject: The finished tablet is ejected, ready for downstream processing.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="..\assets/img/FT4 Pic.png" class="img-fluid figure-img"></p>
+<figcaption>FT4 Powder Rheometer</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="..\assets/img/FT4 Pic 2.png" class="img-fluid figure-img"></p>
+<figcaption>FT4 Powder Rheometer Technology</figcaption>
+</figure>
+</div>
+<ul>
+<li>Stability and Variable Flow Rate:</li>
+<li>Compressibility and Shear at 6 kpa:</li>
+<li>Need to analyze the challenges associated with predicting powder flowability and how understanding powder behaviour can benefit process performance.</li>
+</ul>
+<p><img src="..\assets/img/FT4 Pic 3.png" class="img-fluid"></p>
+</section>
+<section id="inputraw-materials-entry-points" class="level2">
+<h2 class="anchored" data-anchor-id="inputraw-materials-entry-points">Input/Raw Materials &amp; Entry Points</h2>
+<ul>
+<li><p>Active Pharmaceutical Ingredient (API)</p></li>
+<li><p>Diluents: Microcrystalline Ceullulose &amp; Anhydrous Dicalcium Phosphate</p></li>
+<li><p>Disintegrants: Crosarmellose Sodium</p></li>
+<li><p>Lubricants: Magnesium Stearate &amp; Sodium Stearyl Fumarate</p></li>
+<li><p>LiW Feeder 1 &amp; 4: Microcrystalline Cellulose (diluent)</p></li>
+<li><p>LiW Feeder 2: Spray-Dried Lactose (diluent)</p></li>
+<li><p>LiW Feeder 3: Active Pharmaceutical Ingredient (API)</p></li>
+<li><p>LiW Feeder 5: Sodium Croscarmellose (disintegrant)</p></li>
+<li><p>LiW Feeder 7: Magnesium Stearate (lubricant)</p></li>
+</ul>
+</section>
+<section id="process-steps" class="level2">
+<h2 class="anchored" data-anchor-id="process-steps">Process Steps</h2>
+<div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; font-family:Arial;">
+  
+  <div style="padding:12px 14px; border-radius:12px; background:#e8f1ff; border:2px solid #2f6fed; min-width:220px;">
+    <b>1) Raw Material Feeding</b><br>
+    <span style="opacity:.85;">Loss-in-Weight (LiW) Feeders</span>
+  </div>
+
+  <div style="font-size:26px; opacity:.55;">→</div>
+
+  <div style="padding:12px 14px; border-radius:12px; background:#e9fbe9; border:2px solid #2aa44f; min-width:220px;">
+    <b>2) Initial Blending</b><br>
+    <span style="opacity:.85;">Blender 1</span>
+  </div>
+
+  <div style="font-size:26px; opacity:.55;">→</div>
+
+  <div style="padding:12px 14px; border-radius:12px; background:#fff6db; border:2px solid #d6a100; min-width:260px;">
+    <b>3) Lubricant + Final Blending</b><br>
+    <span style="opacity:.85;">Lubricant Addition → Blender 2</span>
+  </div>
+
+  <div style="font-size:26px; opacity:.55;">→</div>
+
+  <div style="padding:12px 14px; border-radius:12px; background:#ffe8e8; border:2px solid #d84a4a; min-width:220px;">
+    <b>4) Compression</b><br>
+    <span style="opacity:.85;">Nexgen Tablet Press</span>
+  </div>
+
+  <div style="font-size:26px; opacity:.55;">→</div>
+
+  <div style="padding:12px 14px; border-radius:12px; background:#f1e9ff; border:2px solid #7a4dd8; min-width:240px;">
+    <b>5) In-Process QC</b><br>
+    <span style="opacity:.85;">Weight • Hardness • CU</span>
+  </div>
+
+  <div style="font-size:26px; opacity:.55;">→</div>
+
+  <div style="padding:12px 14px; border-radius:12px; background:#fff0e1; border:2px solid #e07a1f; min-width:220px;">
+    <b>6) Final Coating</b><br>
+    <span style="opacity:.85;">Coating Stage</span>
+  </div>
+
+</div>
+</section>
+<section id="raw-material-feeding-loss-in-weight-feeders" class="level2">
+<h2 class="anchored" data-anchor-id="raw-material-feeding-loss-in-weight-feeders">Raw Material Feeding (Loss-in-Weight Feeders)</h2>
+<p>Raw materials are continuously introduced into the manufacturing line using loss-in-weight (LiW) feeders, which gravimetrically control material flow by measuring weight loss over time. Each feeder maintains a target mass flow rate, ensuring accurate material ratios and steady-state operation.</p>
+<p>Five LiW feeders (PD1–PD5) deliver individual powder components into the first continuous blender. Feeder control systems dynamically adjust operating parameters, such as screw speed, to correct deviations from desired flow rates and maintain consistent feeding.</p>
+</section>
+<section id="initial-blending-stage-blender-1" class="level2">
+<h2 class="anchored" data-anchor-id="initial-blending-stage-blender-1">Initial Blending Stage (Blender 1)</h2>
+<p>The material streams from PD1–PD5 enter Blender 1, where powders are combined and mixed under continuous operation. This blender provides sufficient residence time and shear to produce a homogeneous intermediate blend.</p>
+<p>Under normal operating conditions, the outlet mass flow rate of Blender 1 matches the total inflow from the upstream feeders, indicating steady-state behavior.</p>
+</section>
+<section id="lubricant-addition-and-final-blending-stage-blender-2" class="level2">
+<h2 class="anchored" data-anchor-id="lubricant-addition-and-final-blending-stage-blender-2">Lubricant Addition and Final Blending Stage (Blender 2)</h2>
+<p>The output of Blender 1 feeds directly into Blender 2, where the final blend is prepared. At this stage, a separate LiW feeder (PD7) introduces the lubricant into the powder stream.</p>
+<p>Blender 2 ensures uniform distribution of the lubricant throughout the blend while minimizing over-lubrication. In steady operation, the mass flow exiting Blender 2 equals the sum of the Blender 1 outflow and the lubricant feeder inflow.</p>
+</section>
+<section id="nexgen-press-range-tablet-press" class="level2">
+<h2 class="anchored" data-anchor-id="nexgen-press-range-tablet-press">Nexgen Press Range (Tablet Press)</h2>
+<p>The final powder blend exits Blender 2 and is transferred to a rotary tablet press, where it is compacted into tablets. Tablet formation occurs in two main stages:</p>
+<ul>
+<li>Pre-compression, during which the powder is lightly compacted as the bottom punch moves upward while the upper punch remains fixed.</li>
+<li>Main compression, where higher compression forces are applied to form tablets with the desired weight, thickness, and mechanical strength.</li>
+</ul>
+<p>Tablet press control systems adjust parameters such as compression force and die fill depth to ensure consistent tablet quality.</p>
+</section>
+<section id="tablet-routing-and-quality-control" class="level2">
+<h2 class="anchored" data-anchor-id="tablet-routing-and-quality-control">Tablet Routing and Quality Control</h2>
+<p>After compression, tablets are routed based on real-time quality assessment:</p>
+<ul>
+<li>Accepted tablets that meet predefined quality specifications proceed to the coating unit.</li>
+<li>Rejected tablets that fall outside acceptable limits are diverted from the process.</li>
+<li>Sampled tablets are periodically removed for offline quality testing, including weight, thickness, and hardness measurements.</li>
+</ul>
+</section>
+<section id="tablet-coating" class="level2">
+<h2 class="anchored" data-anchor-id="tablet-coating">Tablet Coating</h2>
+<p>Accepted core tablets are transferred to a continuous tablet coater, where a thin film coating is applied. This step improves tablet stability, appearance, and functionality while maintaining continuous material flow through the manufacturing line.</p>
+</section>
+<section id="process-monitoring-and-control-strategy" class="level2">
+<h2 class="anchored" data-anchor-id="process-monitoring-and-control-strategy">Process Monitoring and Control Strategy</h2>
+<p>LiW feeders employ local feedback control to maintain accurate mass flow rates. Deviations from target conditions trigger automatic parameter adjustments to restore steady operation.</p>
+<p>The tablet press utilizes local feedback control to regulate compression force and tablet weight. Tablets produced during periods of out-of-spec operation are automatically rejected.</p>
+<p>A residence time distribution (RTD) framework enables traceability of material through the system. When process disturbances or alarms occur, material produced during the affected time window is identified and classified as out-of-spec, ensuring robust quality assurance in continuous manufacturing.</p>
+</section>
+<section id="links" class="level2">
+<h2 class="anchored" data-anchor-id="links">Links</h2>
+</section>
+<section id="links-1" class="level2">
+<h2 class="anchored" data-anchor-id="links-1">Links</h2>
+<p>Mapping Key Process Parameters to the Performance of a Continuous Dry Powder Blender in a Continuous Direct Compression System</p>
+<p><a href="https://www.gea.com/en/assets/315946/" class="uri">https://www.gea.com/en/assets/315946/</a></p>
+<p><a href="https://merrick-inc.com/support/document-center/how-a-liw-feeder-works" class="uri">https://merrick-inc.com/support/document-center/how-a-liw-feeder-works</a></p>
+<p><a href="https://micromeritics.com/products/ft4-powder-rheometer/?utm_source=google&amp;utm_medium=cpc&amp;utm_campaign=EN%20-%20Search%20-%20Micromeritics&amp;utm_term=ft4%20powder%20rheometer&amp;utm_content=EN%20-%20Product%20-%20Freeman%20FT4&amp;gad_source=1&amp;gad_campaignid=22332900911&amp;gclid=EAIaIQobChMIr_vEkbPRkQMVokRHAR0K4x83EAAYASAAEgIgZvD_BwE" class="uri">https://micromeritics.com/products/ft4-powder-rheometer/?utm_source=google&amp;utm_medium=cpc&amp;utm_campaign=EN%20-%20Search%20-%20Micromeritics&amp;utm_term=ft4%20powder%20rheometer&amp;utm_content=EN%20-%20Product%20-%20Freeman%20FT4&amp;gad_source=1&amp;gad_campaignid=22332900911&amp;gclid=EAIaIQobChMIr_vEkbPRkQMVokRHAR0K4x83EAAYASAAEgIgZvD_BwE</a> <a href="https://www.freemantech.co.uk/powder-testing/ft4-powder-rheometer-powder-flow-tester" class="uri">https://www.freemantech.co.uk/powder-testing/ft4-powder-rheometer-powder-flow-tester</a></p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

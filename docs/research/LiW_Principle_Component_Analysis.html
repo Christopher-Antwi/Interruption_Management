@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Loss-in-Weight Feeder PCA – Christopher Antwi</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-e31584831b205ffbb2d98406f31c2a5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Christopher Antwi</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../Research.html"> 
+<span class="menu-text">Research</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../Projects.html"> 
+<span class="menu-text">Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../Papers.html"> 
+<span class="menu-text">Papers</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../Notes.html"> 
+<span class="menu-text">Notes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../CV.html"> 
+<span class="menu-text">CV</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+  <li><a href="#pca-summary" id="toc-pca-summary" class="nav-link active" data-scroll-target="#pca-summary">PCA Summary</a></li>
+  <li><a href="#scree-plot" id="toc-scree-plot" class="nav-link" data-scroll-target="#scree-plot">Scree Plot</a></li>
+  <li><a href="#pca-loadingseigenvectors" id="toc-pca-loadingseigenvectors" class="nav-link" data-scroll-target="#pca-loadingseigenvectors">PCA Loadings/Eigenvectors</a></li>
+  <li><a href="#pca-scores-3d" id="toc-pca-scores-3d" class="nav-link" data-scroll-target="#pca-scores-3d">PCA Scores (3D)</a></li>
+  <li><a href="#pca-loadings-3d-scaled" id="toc-pca-loadings-3d-scaled" class="nav-link" data-scroll-target="#pca-loadings-3d-scaled">PCA Loadings (3D, Scaled)</a></li>
+  <li><a href="#pca-biplot-3d" id="toc-pca-biplot-3d" class="nav-link" data-scroll-target="#pca-biplot-3d">PCA Biplot (3D)</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Loss-in-Weight Feeder PCA</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>In order to optimize an <em>Oral Solid Dose</em> (OSD) <em>Continuous Direct Compression</em> (CDC) process, it is imperative to understand all of the variability that have an impact of the drug quality attributes. A Continuous Direct Compression system is an integrated close-coupled system that minimizes powder flow path by continuously feeding individual formulation components into a continuous blender and transferring the final powder blend into the tablet press. It is important to note the LiW Feeders are widely accepted and used in the pharmaceutical industry due to the amount of gravimetric control they provide of the material that is being feed into the blender. LiW Feeders allow material to be fed at a target mass flow rate that can be controlled which is vital as LiW Feeder performance is key in meeting blend and content uniformity <em>(F.Tahir et al) . A LiW Feeder uses the feed pactor profile as reference to calculate the correct screw speed for delivering the powder mass flow rate at the target set point during volumetric mode.</em> A feed factor is typically measured for a given material at a single screw speed and then the profile across the entire hopper of material by running at a mass flow rate set-point in the gravimetric mode. Once a measurement is taken, the feed factor profile can guide or enable equipment configuration like refill optimization and gearbox selection. Feed factor helps indicate changing material properties within the hopper.</p>
+<p>Feed Factor: <span class="math inline">\(FF = \frac{m(t)}{SS}\)</span></p>
+<p>where <span class="math inline">\(m(t)\)</span> denotes the mass flowrate in g/min</p>
+<p>and <span class="math inline">\(SS\)</span> is the screw speed measured in <strong>Rotations Per Minute</strong></p>
+<p>Principal component analysis, or PCA, reduces the number of dimensions in large datasets to principal components&nbsp;that retain most of the original information. It does this by transforming potentially correlated variables into a smaller set of variables, called principal components. PCA is a commonly used approach within regression analysis but it is also leveraged for a variety of use cases, such as pattern recognition, signal processing, image processing, and more (<a href="https://www.ibm.com/think/topics/principal-component-analysis">IBM</a>).</p>
+<p>Singular value compression in PCA is the optimal low rank approximation of the centered data matrix obtained by truncating its SVD, yielding orthogonal latent variables that capture maximal variance and represent the dominant physical modes of the system while discarding noise.</p>
+<p><span class="math inline">\(X \in R^{n x p}\)</span></p>
+<p>Where:</p>
+<p><span class="math inline">\(n\)</span> = time</p>
+<p><span class="math inline">\(p\)</span> = LiW Variables</p>
+<section id="pca-summary" class="level2 cell" data-layout-align="center">
+<h2 class="anchored" data-anchor-id="pca-summary">PCA Summary</h2>
+<table class="caption-top table table-sm table-striped small">
+<caption>PCA Summary</caption>
+<colgroup>
+<col style="width: 6%">
+<col style="width: 8%">
+<col style="width: 21%">
+<col style="width: 32%">
+<col style="width: 31%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">PC</th>
+<th style="text-align: center;">Std..Deviation</th>
+<th style="text-align: center;">Proportion.of.Variance</th>
+<th style="text-align: center;">Cumulative.Proportion</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">PC1</td>
+<td style="text-align: center;">PC1</td>
+<td style="text-align: center;">3.507</td>
+<td style="text-align: center;">0.3416</td>
+<td style="text-align: center;">0.3416</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PC2</td>
+<td style="text-align: center;">PC2</td>
+<td style="text-align: center;">1.833</td>
+<td style="text-align: center;">0.0933</td>
+<td style="text-align: center;">0.4349</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PC3</td>
+<td style="text-align: center;">PC3</td>
+<td style="text-align: center;">1.389</td>
+<td style="text-align: center;">0.0536</td>
+<td style="text-align: center;">0.4885</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PC4</td>
+<td style="text-align: center;">PC4</td>
+<td style="text-align: center;">1.362</td>
+<td style="text-align: center;">0.0515</td>
+<td style="text-align: center;">0.5400</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PC5</td>
+<td style="text-align: center;">PC5</td>
+<td style="text-align: center;">1.312</td>
+<td style="text-align: center;">0.0478</td>
+<td style="text-align: center;">0.5878</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PC6</td>
+<td style="text-align: center;">PC6</td>
+<td style="text-align: center;">1.271</td>
+<td style="text-align: center;">0.0449</td>
+<td style="text-align: center;">0.6327</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PC7</td>
+<td style="text-align: center;">PC7</td>
+<td style="text-align: center;">1.235</td>
+<td style="text-align: center;">0.0424</td>
+<td style="text-align: center;">0.6751</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PC8</td>
+<td style="text-align: center;">PC8</td>
+<td style="text-align: center;">1.172</td>
+<td style="text-align: center;">0.0382</td>
+<td style="text-align: center;">0.7133</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PC9</td>
+<td style="text-align: center;">PC9</td>
+<td style="text-align: center;">1.147</td>
+<td style="text-align: center;">0.0365</td>
+<td style="text-align: center;">0.7498</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PC10</td>
+<td style="text-align: center;">PC10</td>
+<td style="text-align: center;">1.114</td>
+<td style="text-align: center;">0.0345</td>
+<td style="text-align: center;">0.7842</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PC11</td>
+<td style="text-align: center;">PC11</td>
+<td style="text-align: center;">1.002</td>
+<td style="text-align: center;">0.0279</td>
+<td style="text-align: center;">0.8121</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PC12</td>
+<td style="text-align: center;">PC12</td>
+<td style="text-align: center;">0.992</td>
+<td style="text-align: center;">0.0273</td>
+<td style="text-align: center;">0.8395</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PC13</td>
+<td style="text-align: center;">PC13</td>
+<td style="text-align: center;">0.940</td>
+<td style="text-align: center;">0.0246</td>
+<td style="text-align: center;">0.8640</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PC14</td>
+<td style="text-align: center;">PC14</td>
+<td style="text-align: center;">0.845</td>
+<td style="text-align: center;">0.0198</td>
+<td style="text-align: center;">0.8838</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PC15</td>
+<td style="text-align: center;">PC15</td>
+<td style="text-align: center;">0.828</td>
+<td style="text-align: center;">0.0191</td>
+<td style="text-align: center;">0.9029</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PC16</td>
+<td style="text-align: center;">PC16</td>
+<td style="text-align: center;">0.770</td>
+<td style="text-align: center;">0.0165</td>
+<td style="text-align: center;">0.9194</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PC17</td>
+<td style="text-align: center;">PC17</td>
+<td style="text-align: center;">0.757</td>
+<td style="text-align: center;">0.0159</td>
+<td style="text-align: center;">0.9353</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PC18</td>
+<td style="text-align: center;">PC18</td>
+<td style="text-align: center;">0.717</td>
+<td style="text-align: center;">0.0143</td>
+<td style="text-align: center;">0.9496</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PC19</td>
+<td style="text-align: center;">PC19</td>
+<td style="text-align: center;">0.684</td>
+<td style="text-align: center;">0.0130</td>
+<td style="text-align: center;">0.9626</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PC20</td>
+<td style="text-align: center;">PC20</td>
+<td style="text-align: center;">0.616</td>
+<td style="text-align: center;">0.0106</td>
+<td style="text-align: center;">0.9731</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PC21</td>
+<td style="text-align: center;">PC21</td>
+<td style="text-align: center;">0.566</td>
+<td style="text-align: center;">0.0089</td>
+<td style="text-align: center;">0.9820</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PC22</td>
+<td style="text-align: center;">PC22</td>
+<td style="text-align: center;">0.447</td>
+<td style="text-align: center;">0.0055</td>
+<td style="text-align: center;">0.9876</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PC23</td>
+<td style="text-align: center;">PC23</td>
+<td style="text-align: center;">0.388</td>
+<td style="text-align: center;">0.0042</td>
+<td style="text-align: center;">0.9918</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PC24</td>
+<td style="text-align: center;">PC24</td>
+<td style="text-align: center;">0.305</td>
+<td style="text-align: center;">0.0026</td>
+<td style="text-align: center;">0.9944</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PC25</td>
+<td style="text-align: center;">PC25</td>
+<td style="text-align: center;">0.188</td>
+<td style="text-align: center;">0.0010</td>
+<td style="text-align: center;">0.9953</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PC26</td>
+<td style="text-align: center;">PC26</td>
+<td style="text-align: center;">0.180</td>
+<td style="text-align: center;">0.0009</td>
+<td style="text-align: center;">0.9962</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PC27</td>
+<td style="text-align: center;">PC27</td>
+<td style="text-align: center;">0.171</td>
+<td style="text-align: center;">0.0008</td>
+<td style="text-align: center;">0.9971</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PC28</td>
+<td style="text-align: center;">PC28</td>
+<td style="text-align: center;">0.158</td>
+<td style="text-align: center;">0.0007</td>
+<td style="text-align: center;">0.9978</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PC29</td>
+<td style="text-align: center;">PC29</td>
+<td style="text-align: center;">0.138</td>
+<td style="text-align: center;">0.0005</td>
+<td style="text-align: center;">0.9983</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PC30</td>
+<td style="text-align: center;">PC30</td>
+<td style="text-align: center;">0.128</td>
+<td style="text-align: center;">0.0005</td>
+<td style="text-align: center;">0.9987</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PC31</td>
+<td style="text-align: center;">PC31</td>
+<td style="text-align: center;">0.108</td>
+<td style="text-align: center;">0.0003</td>
+<td style="text-align: center;">0.9991</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PC32</td>
+<td style="text-align: center;">PC32</td>
+<td style="text-align: center;">0.105</td>
+<td style="text-align: center;">0.0003</td>
+<td style="text-align: center;">0.9994</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PC33</td>
+<td style="text-align: center;">PC33</td>
+<td style="text-align: center;">0.099</td>
+<td style="text-align: center;">0.0003</td>
+<td style="text-align: center;">0.9996</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PC34</td>
+<td style="text-align: center;">PC34</td>
+<td style="text-align: center;">0.079</td>
+<td style="text-align: center;">0.0002</td>
+<td style="text-align: center;">0.9998</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PC35</td>
+<td style="text-align: center;">PC35</td>
+<td style="text-align: center;">0.067</td>
+<td style="text-align: center;">0.0001</td>
+<td style="text-align: center;">0.9999</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PC36</td>
+<td style="text-align: center;">PC36</td>
+<td style="text-align: center;">0.046</td>
+<td style="text-align: center;">0.0001</td>
+<td style="text-align: center;">1.0000</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="scree-plot" class="level2">
+<h2 class="anchored" data-anchor-id="scree-plot">Scree Plot</h2>
+<p>Utilized this to determine how many principle components would potentially be useful.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="..\assets/img/LiW Feeders Variance Explained by PCA.png" class="img-fluid figure-img"></p>
+<figcaption>Loss in Weight Feeders Scree Plot</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="..\assets/img/PCA_Scores_Plot.png" class="img-fluid figure-img"></p>
+<figcaption>PCA Scores Plot</figcaption>
+</figure>
+</div>
+</section>
+<section id="pca-loadingseigenvectors" class="level2">
+<h2 class="anchored" data-anchor-id="pca-loadingseigenvectors">PCA Loadings/Eigenvectors</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="..\assets/img/LiW PC1 Loadings.png" class="img-fluid figure-img"></p>
+<figcaption>LiW PC1</figcaption>
+</figure>
+</div>
+<section id="liw-pc2" class="level3">
+<h3 class="anchored" data-anchor-id="liw-pc2"><img src="..\assets/img/LiW PC2 Loadings.png" class="img-fluid" alt="LiW PC2"></h3>
+<p>&nbsp; &nbsp;<br>
+</p>
+<p><br>
+<img src="..\assets/img/LiW PC3 Loadings.png" class="img-fluid" alt="LiW PC3"><br>
+<br>
+</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="..\assets/img/LiW PC4 Loadings.png" class="img-fluid figure-img"></p>
+<figcaption>LiW PC4</figcaption>
+</figure>
+</div>
+</section>
+<section id="liw-pc5" class="level3">
+<h3 class="anchored" data-anchor-id="liw-pc5"><img src="..\assets/img/LiW PC5 Loadings.png" class="img-fluid" alt="LiW PC5"></h3>
+</section>
+</div>
+</div>
+</section>
+<section id="pca-scores-3d" class="level2">
+<h2 class="anchored" data-anchor-id="pca-scores-3d">PCA Scores (3D)</h2>
+</section>
+<section id="pca-loadings-3d-scaled" class="level2">
+<h2 class="anchored" data-anchor-id="pca-loadings-3d-scaled">PCA Loadings (3D, Scaled)</h2>
+</section>
+<section id="pca-biplot-3d" class="level2">
+<h2 class="anchored" data-anchor-id="pca-biplot-3d">PCA Biplot (3D)</h2>
+<h2 id="pca-scores-3d" class="anchored">PCA Scores (3D)</h2>
+<iframe src="assets/figures/pca_scores_3d.html" width="100%" height="650" style="border:0;"></iframe>
+
+<h2 id="pca-loadings-3d-scaled" class="anchored">PCA Loadings (3D, Scaled)</h2>
+<iframe src="assets/figures/pca_loadings_3d.html" width="100%" height="650" style="border:0;"></iframe>
+
+<h2 id="pca-biplot-3d" class="anchored">PCA Biplot (3D)</h2>
+<iframe src="assets/figures/pca_biplot_3d.html" width="100%" height="650" style="border:0;"></iframe>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

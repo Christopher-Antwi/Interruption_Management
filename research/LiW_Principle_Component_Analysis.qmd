@@ -1,0 +1,135 @@
+---
+title: "Loss-in-Weight Feeder PCA"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    code-fold: true
+    code-summary: "Show code"
+execute: 
+  echo: true
+  warning: false
+  message: false
+---
+
+In order to optimize an *Oral Solid Dose* (OSD) *Continuous Direct Compression* (CDC) process, it is imperative to understand all of the variability that have an impact of the drug quality attributes. A Continuous Direct Compression system is an integrated close-coupled system that minimizes powder flow path by continuously feeding individual formulation components into a continuous blender and transferring the final powder blend into the tablet press. It is important to note the LiW Feeders are widely accepted and used in the pharmaceutical industry due to the amount of gravimetric control they provide of the material that is being feed into the blender. LiW Feeders allow material to be fed at a target mass flow rate that can be controlled which is vital as LiW Feeder performance is key in meeting blend and content uniformity *(F.Tahir et al) . A LiW Feeder uses the feed pactor profile as reference to calculate the correct screw speed for delivering the powder mass flow rate at the target set point during volumetric mode.* A feed factor is typically measured for a given material at a single screw speed and then the profile across the entire hopper of material by running at a mass flow rate set-point in the gravimetric mode. Once a measurement is taken, the feed factor profile can guide or enable equipment configuration like refill optimization and gearbox selection. Feed factor helps indicate changing material properties within the hopper.
+
+Feed Factor: $FF = \frac{m(t)}{SS}$
+
+where $m(t)$ denotes the mass flowrate in g/min
+
+and $SS$ is the screw speed measured in **Rotations Per Minute**
+
+Principal component analysis, or PCA, reduces the number of dimensions in large datasets to principal components that retain most of the original information. It does this by transforming potentially correlated variables into a smaller set of variables, called principal components. PCA is a commonly used approach within regression analysis but it is also leveraged for a variety of use cases, such as pattern recognition, signal processing, image processing, and more ([IBM](https://www.ibm.com/think/topics/principal-component-analysis)).
+
+Singular value compression in PCA is the optimal low rank approximation of the centered data matrix obtained by truncating its SVD, yielding orthogonal latent variables that capture maximal variance and represent the dominant physical modes of the system while discarding noise.
+
+$X \in R^{n x p}$
+
+Where:
+
+$n$ = time
+
+$p$ = LiW Variables
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| results: asis
+#| fig-align: center
+#| out-width: "85%"
+
+
+
+library(tidyverse)
+library(janitor)
+library(kableExtra)
+library(lubridate)
+library(skimr)
+library(hms)
+library(knitr)
+library(Rgraphviz)
+library(readxl)
+library(writexl)
+library(data.table)
+library(zoo)
+library(distill)
+library(scales)
+library(here)
+
+
+LiW_PCA_Active = read_excel(here("data","processed","LiW_PCA_Active.xlsx"))
+scaled_pca_liw = scale(LiW_PCA_Active)
+
+pca_fit = prcomp(
+  scaled_pca_liw,
+  center = TRUE,
+  scale. = FALSE
+)
+
+
+
+cat("## PCA Summary\n\n")
+
+pca_sum <- summary(pca_fit)
+
+pca_tbl <- data.frame(
+  PC = paste0("PC", seq_along(pca_sum$importance["Proportion of Variance", ])),
+  `Std. Deviation` = round(pca_sum$importance["Standard deviation", ], 3),
+  `Proportion of Variance` = round(pca_sum$importance["Proportion of Variance", ], 4),
+  `Cumulative Proportion` = round(pca_sum$importance["Cumulative Proportion", ], 4)
+)
+
+knitr::kable(
+  pca_tbl,
+  caption = "PCA Summary",
+  align = "c"
+)
+
+```
+
+## Scree Plot
+
+Utilized this to determine how many principle components would potentially be useful.
+
+![Loss in Weight Feeders Scree Plot](/assets/img/LiW%20Feeders%20Variance%20Explained%20by%20PCA.png)
+
+![PCA Scores Plot](/assets/img/PCA_Scores_Plot.png)
+
+## PCA Loadings/Eigenvectors
+
+:::: columns
+::: {.column width="50%"}
+![LiW PC1](/assets/img/LiW%20PC1%20Loadings.png)
+
+### ![LiW PC2](/assets/img/LiW%20PC2%20Loadings.png)
+
+   \
+
+\
+![LiW PC3](/assets/img/LiW%20PC3%20Loadings.png)\
+\
+
+![LiW PC4](/assets/img/LiW%20PC4%20Loadings.png)
+
+### ![LiW PC5](/assets/img/LiW%20PC5%20Loadings.png)
+:::
+::::
+
+## PCA Scores (3D)
+
+## PCA Loadings (3D, Scaled)
+
+## PCA Biplot (3D)
+
+```{=html}
+<h2 id="pca-scores-3d">PCA Scores (3D)</h2>
+<iframe src="assets/figures/pca_scores_3d.html" width="100%" height="650" style="border:0;"></iframe>
+
+<h2 id="pca-loadings-3d-scaled">PCA Loadings (3D, Scaled)</h2>
+<iframe src="assets/figures/pca_loadings_3d.html" width="100%" height="650" style="border:0;"></iframe>
+
+<h2 id="pca-biplot-3d">PCA Biplot (3D)</h2>
+<iframe src="assets/figures/pca_biplot_3d.html" width="100%" height="650" style="border:0;"></iframe>
+```
