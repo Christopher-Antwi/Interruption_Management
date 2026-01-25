@@ -5,3 +5,11 @@
 
 /.quarto/
 **/*.quarto_ipynb
+
+# --- do not push large data files ---
+data/raw/
+data/processed/*.xlsx
+data/processed/*.csv
+data/raw/*.xlsx
+data/raw/*.csv
+
