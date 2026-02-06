@@ -3,4 +3,4 @@ title: "Notes"
 format: html
 ---
 
-Coming soon
+[Interruption Management Notes](research/Current_Notes_and_Log.qmd)

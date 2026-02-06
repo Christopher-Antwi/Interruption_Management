@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Notes – Christopher Antwi</title>
+<title>Current_Notes_and_Log – Christopher Antwi</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,24 +23,24 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-e31584831b205ffbb2d98406f31c2a5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-e31584831b205ffbb2d98406f31c2a5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -69,8 +69,37 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<link rel="stylesheet" href="styles.css">
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
 </head>
 
 <body class="nav-fixed quarto-light">
@@ -80,9 +109,9 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
     </a>
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Christopher Antwi</span>
     </a>
   </div>
@@ -93,27 +122,27 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./index.html"> 
+    <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./Research.html"> 
+    <a class="nav-link" href="../Research.html"> 
 <span class="menu-text">Research</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./Projects.html"> 
+    <a class="nav-link" href="../Projects.html"> 
 <span class="menu-text">Projects</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./Papers.html"> 
+    <a class="nav-link" href="../Papers.html"> 
 <span class="menu-text">Papers</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./Notes.html" aria-current="page"> 
+    <a class="nav-link" href="../Notes.html"> 
 <span class="menu-text">Notes</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./CV.html"> 
+    <a class="nav-link" href="../CV.html"> 
 <span class="menu-text">CV</span></a>
   </li>  
 </ul>
@@ -127,15 +156,24 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#week-5-21-28" id="toc-week-5-21-28" class="nav-link active" data-scroll-target="#week-5-21-28">Week 5 2/1-2/8</a>
+  <ul class="collapse">
+  <li><a href="#latent-dirichlet-allocation" id="toc-latent-dirichlet-allocation" class="nav-link" data-scroll-target="#latent-dirichlet-allocation">Latent Dirichlet Allocation</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Notes</h1>
+<h1 class="title">Current_Notes_and_Log</h1>
 </div>
 
 
@@ -152,9 +190,61 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p><a href="./research/Current_Notes_and_Log.html">Interruption Management Notes</a></p>
+<section id="week-5-21-28" class="level1">
+<h1>Week 5 2/1-2/8</h1>
+<p>Topic modeling essentially treats each individual document in a collection of texts as a&nbsp;<a href="https://www.ibm.com/topics/bag-of-words">bag of words</a>&nbsp;model. This means that the topic modeling algorithm ignores word order and context, simply focusing on how often words occur, and how often they co-occur, within each individual document. (IBM).</p>
+<p>This is ideal because the inputs in the LogBook vary from person to person in length, detail, and context</p>
+<p>Document Term Matrix or DTM models the text dataset with documents as rows and individual words as columns, or vice-versa. Values in the matrix indicate the frequency with which a given word appears in each document. This matrix can then be used to generate a vector space, where&nbsp;<em>n</em>&nbsp;words equals&nbsp;<em>n</em>&nbsp;dimensions. A given row’s value indicates that document’s position in the vector space.&nbsp;</p>
+<p>Each topic is modeled as a probability distribution across a vocabulary of words. Each document in the collection is then represented in terms of those topics.&nbsp;In this way, topic models essentially attempt to reverse engineer the discourses (that is, topics) that produced the documents in question.</p>
+<p>Term frequency-inverse document frequency (TF-IDF) is a modification of bag of words intended to address the issues resulting from common yet semantically irrelevant words by accounting for each word’s prevalence throughout every document in a text set. Latent semantic analysis builds on TF-IDF with the principal intent of addressing polysemy and synonymy.</p>
+<p><a href="https://www.google.com/search?q=Polysemy&amp;sca_esv=fa30f98f2ff67e07&amp;ei=b--Fac3xIZaPm9cPtcfesQk&amp;biw=1272&amp;bih=674&amp;ved=2ahUKEwjMhbOH_8SSAxXDHjQIHeqfBYUQgK4QegQIARAC&amp;uact=5&amp;oq=polysemy+and+synonymy&amp;gs_lp=Egxnd3Mtd2l6LXNlcnAiFXBvbHlzZW15IGFuZCBzeW5vbnlteTIFEAAYgAQyBhAAGBYYHjILEAAYgAQYigUYhgMyCxAAGIAEGIoFGIYDMggQABiABBiiBDIIEAAYgAQYogQyBRAAGO8FSKcIUJsEWJsEcAF4AJABAJgBZ6ABZ6oBAzAuMbgBA8gBAPgBAZgCAqACeMICCRAAGAcYHhiwA8ICBxAAGB4YsAPCAgkQABgIGB4YsAPCAg4QABiABBiKBRiGAxiwA8ICCxAAGIAEGKIEGLADwgIIEAAY7wUYsAOYAwCIBgGQBgiSBwMxLjGgB6UEsgcDMC4xuAdwwgcDMi0yyAcNgAgB&amp;sclient=gws-wiz-serp&amp;mstk=AUtExfC9nkkcHjklTzcHHxYKH5_5HA0OB58SPC8TseZA4Evjy6zKQZDdDOJMibGqW4S1FIdabN4Vc_RdN-Vxqe1Dj8TvbHTf98z3JbV_xezhypZL1NJWTn2H1_W-M0DqEVphc2s&amp;csui=3"><em>Polysemy</em></a> <em>refers to a single word having multiple, related meanings (e.g., “crane” as a bird or machine), while&nbsp;<a href="https://www.google.com/search?q=synonymy&amp;sca_esv=fa30f98f2ff67e07&amp;ei=b--Fac3xIZaPm9cPtcfesQk&amp;biw=1272&amp;bih=674&amp;ved=2ahUKEwjMhbOH_8SSAxXDHjQIHeqfBYUQgK4QegQIARAD&amp;uact=5&amp;oq=polysemy+and+synonymy&amp;gs_lp=Egxnd3Mtd2l6LXNlcnAiFXBvbHlzZW15IGFuZCBzeW5vbnlteTIFEAAYgAQyBhAAGBYYHjILEAAYgAQYigUYhgMyCxAAGIAEGIoFGIYDMggQABiABBiiBDIIEAAYgAQYogQyBRAAGO8FSKcIUJsEWJsEcAF4AJABAJgBZ6ABZ6oBAzAuMbgBA8gBAPgBAZgCAqACeMICCRAAGAcYHhiwA8ICBxAAGB4YsAPCAgkQABgIGB4YsAPCAg4QABiABBiKBRiGAxiwA8ICCxAAGIAEGKIEGLADwgIIEAAY7wUYsAOYAwCIBgGQBgiSBwMxLjGgB6UEsgcDMC4xuAdwwgcDMi0yyAcNgAgB&amp;sclient=gws-wiz-serp&amp;mstk=AUtExfC9nkkcHjklTzcHHxYKH5_5HA0OB58SPC8TseZA4Evjy6zKQZDdDOJMibGqW4S1FIdabN4Vc_RdN-Vxqe1Dj8TvbHTf98z3JbV_xezhypZL1NJWTn2H1_W-M0DqEVphc2s&amp;csui=3">synonymy</a>&nbsp;involves different words sharing similar meanings&nbsp;(e.g., “big” and “large”).</em></p>
+<p><strong>Latent Semantic Analysis (LSA):</strong> deploys a technique known as singular value decomposition in order to reduce sparsity in the document-term matrix.</p>
+<p><a href="https://personal.math.vt.edu/embree/cmda3606/chapter6.pdf"><strong>Singular Value Decomposition</strong></a><strong>:</strong> is a factorization method in linear algebra that decomposes a matrix into three other matrices, providing a way to represent data in terms of its singular values.</p>
+<p><strong>SVD</strong> helps you split that table into three parts:</p>
+<ul>
+<li><p><strong>U</strong>: This part tells you about the people (like their general preferences).</p></li>
+<li><p><strong>Σ</strong>: This part shows how important each factor is (how much each rating matters).</p></li>
+<li><p><strong>Vᵀ</strong>: This part tells you about the products (how similar they are to each other)</p></li>
+</ul>
+<p>Mathematically, the SVD of a matrix AA (of size m×nm×n) is represented as: <span class="math inline">\(A=UΣVTA=UΣVT\)</span></p>
+<p>Here:</p>
+<ul>
+<li><p><span class="math inline">\(UU\)</span>: An <span class="math inline">\(m×mm×m\)</span> orthogonal matrix whose columns are the left singular vectors of <span class="math inline">\(AA\)</span>.</p></li>
+<li><p><span class="math inline">\(ΣΣ\)</span>: A diagonal <span class="math inline">\(m×nm×n\)</span> matrix containing the singular values of <span class="math inline">\(AA\)</span> in descending order.</p></li>
+<li><p><span class="math inline">\(VTVT:\)</span> The transpose of an n×nn×n orthogonal matrix, where the columns are the right singular vectors of <span class="math inline">\(AA\)</span>.</p></li>
+</ul>
+<p><strong>LSA</strong> produces a <strong>Document-Document Matrix</strong> and <strong>Term-Term Matrix</strong>. If the <strong>Document-Term Matrix</strong> dimensions are defined as&nbsp;<strong><em>d</em></strong> <strong>documents times&nbsp;<em>w</em>&nbsp;words</strong>, then the <strong>Document-Document Matrix</strong> is&nbsp;<strong><em>d</em></strong> <strong>times&nbsp;<em>d</em>&nbsp;and the Term-Term Matrix&nbsp;<em>w</em>&nbsp;times&nbsp;<em>w</em></strong>. Each value in the <strong>Document-Document Matrix</strong> indicates the number of words each document has in common. Each value in the term-term matrix indicates the number of documents in which two term co-occur.</p>
+<p>Once model dimensions have been reduced through singular value decomposition, the LSA algorithm compares documents in the lower dimensional space using cosine similarity. Cosine similarity signifies the measurement of the angle between two vectors in vector space. It may be any value between -1 and 1. The higher the cosine score, the more alike two documents are considered. Cosine similarity is represented by this formula, where&nbsp;<em>x</em>&nbsp;and&nbsp;<em>y</em>&nbsp;signify two item-vectors in the vector space</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="..\assets/img/LSA_Cosine.png" class="img-fluid figure-img"></p>
+<figcaption>Cosine Similiarity Formula</figcaption>
+</figure>
+</div>
+<section id="latent-dirichlet-allocation" class="level2">
+<h2 class="anchored" data-anchor-id="latent-dirichlet-allocation">Latent Dirichlet Allocation</h2>
+<p>is a probabilistic topic modeling algorithm that generates topics, classifying words and documents among these topics, according to probability distributions. Using the document-term matrix, the LDA algorithm generates topic distributions (that is, lists of keywords with respective probabilities) according to word frequency and co-occurrence.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="..\assets/img/LDA_Topic_Example.png" class="img-fluid figure-img"></p>
+<figcaption>LDA Model Partial Output Example</figcaption>
+</figure>
+</div>
+<p>When assigning topics to words, the LDA algorithm uses what is known as Gibbs sampling:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="..\assets/img/LDA_Gibbs_Sampling_Formula.png" class="img-fluid figure-img"></p>
+<figcaption>LDA Gibbs Sampling Formula</figcaption>
+</figure>
+</div>
+<ul>
+<li><p>The first ratio expresses the <strong>Probability of Topic <em>t</em> in Document <em>d</em></strong>. The algorithm calculates this probability according to the number of words in document <em>d</em> that belong to topic <em>t</em>. This essentially asks: <em>How Prevalent is Topic t in Document d?</em></p></li>
+<li><p>The second ratio expresses the <strong>Probability of Word <em>w</em> Belonging to Topic <em>t</em></strong>. The algorithm calculates this probability by enumerating the occurrences of <em>w</em> in <em>t</em> over all word-tokens in <em>t</em>. This asks: <em>With What Frequency Does Word w Appear in Topic t Throughout the Rest of The Corpus?</em></p></li>
+</ul>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

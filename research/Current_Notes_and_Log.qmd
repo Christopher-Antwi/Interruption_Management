@@ -1,0 +1,60 @@
+---
+title: "Current_Notes_and_Log"
+format: html
+---
+
+# Week 5 2/1-2/8
+
+Topic modeling essentially treats each individual document in a collection of texts as a [bag of words](https://www.ibm.com/topics/bag-of-words) model. This means that the topic modeling algorithm ignores word order and context, simply focusing on how often words occur, and how often they co-occur, within each individual document. (IBM).
+
+This is ideal because the inputs in the LogBook vary from person to person in length, detail, and context
+
+Document Term Matrix or DTM models the text dataset with documents as rows and individual words as columns, or vice-versa. Values in the matrix indicate the frequency with which a given word appears in each document. This matrix can then be used to generate a vector space, where *n* words equals *n* dimensions. A given row’s value indicates that document’s position in the vector space. 
+
+Each topic is modeled as a probability distribution across a vocabulary of words. Each document in the collection is then represented in terms of those topics. In this way, topic models essentially attempt to reverse engineer the discourses (that is, topics) that produced the documents in question.
+
+Term frequency-inverse document frequency (TF-IDF) is a modification of bag of words intended to address the issues resulting from common yet semantically irrelevant words by accounting for each word’s prevalence throughout every document in a text set. Latent semantic analysis builds on TF-IDF with the principal intent of addressing polysemy and synonymy.
+
+[*Polysemy*](https://www.google.com/search?q=Polysemy&sca_esv=fa30f98f2ff67e07&ei=b--Fac3xIZaPm9cPtcfesQk&biw=1272&bih=674&ved=2ahUKEwjMhbOH_8SSAxXDHjQIHeqfBYUQgK4QegQIARAC&uact=5&oq=polysemy+and+synonymy&gs_lp=Egxnd3Mtd2l6LXNlcnAiFXBvbHlzZW15IGFuZCBzeW5vbnlteTIFEAAYgAQyBhAAGBYYHjILEAAYgAQYigUYhgMyCxAAGIAEGIoFGIYDMggQABiABBiiBDIIEAAYgAQYogQyBRAAGO8FSKcIUJsEWJsEcAF4AJABAJgBZ6ABZ6oBAzAuMbgBA8gBAPgBAZgCAqACeMICCRAAGAcYHhiwA8ICBxAAGB4YsAPCAgkQABgIGB4YsAPCAg4QABiABBiKBRiGAxiwA8ICCxAAGIAEGKIEGLADwgIIEAAY7wUYsAOYAwCIBgGQBgiSBwMxLjGgB6UEsgcDMC4xuAdwwgcDMi0yyAcNgAgB&sclient=gws-wiz-serp&mstk=AUtExfC9nkkcHjklTzcHHxYKH5_5HA0OB58SPC8TseZA4Evjy6zKQZDdDOJMibGqW4S1FIdabN4Vc_RdN-Vxqe1Dj8TvbHTf98z3JbV_xezhypZL1NJWTn2H1_W-M0DqEVphc2s&csui=3) *refers to a single word having multiple, related meanings (e.g., "crane" as a bird or machine), while [synonymy](https://www.google.com/search?q=synonymy&sca_esv=fa30f98f2ff67e07&ei=b--Fac3xIZaPm9cPtcfesQk&biw=1272&bih=674&ved=2ahUKEwjMhbOH_8SSAxXDHjQIHeqfBYUQgK4QegQIARAD&uact=5&oq=polysemy+and+synonymy&gs_lp=Egxnd3Mtd2l6LXNlcnAiFXBvbHlzZW15IGFuZCBzeW5vbnlteTIFEAAYgAQyBhAAGBYYHjILEAAYgAQYigUYhgMyCxAAGIAEGIoFGIYDMggQABiABBiiBDIIEAAYgAQYogQyBRAAGO8FSKcIUJsEWJsEcAF4AJABAJgBZ6ABZ6oBAzAuMbgBA8gBAPgBAZgCAqACeMICCRAAGAcYHhiwA8ICBxAAGB4YsAPCAgkQABgIGB4YsAPCAg4QABiABBiKBRiGAxiwA8ICCxAAGIAEGKIEGLADwgIIEAAY7wUYsAOYAwCIBgGQBgiSBwMxLjGgB6UEsgcDMC4xuAdwwgcDMi0yyAcNgAgB&sclient=gws-wiz-serp&mstk=AUtExfC9nkkcHjklTzcHHxYKH5_5HA0OB58SPC8TseZA4Evjy6zKQZDdDOJMibGqW4S1FIdabN4Vc_RdN-Vxqe1Dj8TvbHTf98z3JbV_xezhypZL1NJWTn2H1_W-M0DqEVphc2s&csui=3) involves different words sharing similar meanings (e.g., "big" and "large").*
+
+**Latent Semantic Analysis (LSA):** deploys a technique known as singular value decomposition in order to reduce sparsity in the document-term matrix.
+
+[**Singular Value Decomposition**](https://personal.math.vt.edu/embree/cmda3606/chapter6.pdf)**:** is a factorization method in linear algebra that decomposes a matrix into three other matrices, providing a way to represent data in terms of its singular values.
+
+**SVD** helps you split that table into three parts:
+
+-   **U**: This part tells you about the people (like their general preferences).
+
+-   **Σ**: This part shows how important each factor is (how much each rating matters).
+
+-   **Vᵀ**: This part tells you about the products (how similar they are to each other)
+
+Mathematically, the SVD of a matrix AA (of size m×nm×n) is represented as: $A=UΣVTA=UΣVT$
+
+Here:
+
+-   $UU$: An $m×mm×m$ orthogonal matrix whose columns are the left singular vectors of $AA$.
+
+-   $ΣΣ$: A diagonal $m×nm×n$ matrix containing the singular values of $AA$ in descending order.
+
+-   $VTVT:$ The transpose of an n×nn×n orthogonal matrix, where the columns are the right singular vectors of $AA$.
+
+**LSA** produces a **Document-Document Matrix** and **Term-Term Matrix**. If the **Document-Term Matrix** dimensions are defined as ***d*** **documents times *w* words**, then the **Document-Document Matrix** is ***d*** **times *d* and the Term-Term Matrix *w* times *w***. Each value in the **Document-Document Matrix** indicates the number of words each document has in common. Each value in the term-term matrix indicates the number of documents in which two term co-occur.
+
+Once model dimensions have been reduced through singular value decomposition, the LSA algorithm compares documents in the lower dimensional space using cosine similarity. Cosine similarity signifies the measurement of the angle between two vectors in vector space. It may be any value between -1 and 1. The higher the cosine score, the more alike two documents are considered. Cosine similarity is represented by this formula, where *x* and *y* signify two item-vectors in the vector space
+
+![Cosine Similiarity Formula](/assets/img/LSA_Cosine.png)
+
+## Latent Dirichlet Allocation
+
+is a probabilistic topic modeling algorithm that generates topics, classifying words and documents among these topics, according to probability distributions. Using the document-term matrix, the LDA algorithm generates topic distributions (that is, lists of keywords with respective probabilities) according to word frequency and co-occurrence.
+
+![LDA Model Partial Output Example](/assets/img/LDA_Topic_Example.png)
+
+When assigning topics to words, the LDA algorithm uses what is known as Gibbs sampling:
+
+![LDA Gibbs Sampling Formula](/assets/img/LDA_Gibbs_Sampling_Formula.png)
+
+-   The first ratio expresses the **Probability of Topic *t* in Document *d***. The algorithm calculates this probability according to the number of words in document *d* that belong to topic *t*. This essentially asks: *How Prevalent is Topic t in Document d?*
+
+-   The second ratio expresses the **Probability of Word *w* Belonging to Topic *t***. The algorithm calculates this probability by enumerating the occurrences of *w* in *t* over all word-tokens in *t*. This asks: *With What Frequency Does Word w Appear in Topic t Throughout the Rest of The Corpus?*
