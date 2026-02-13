@@ -93,8 +93,12 @@ Productivity Risk: Failing to adjust clipper length can cause the clipper to "di
 
 -   First Stage: Trailer Wait as a Function of two Instruments **Average Productivity of Other Workers in the Same Field & Number of Other Workers in Group who Experienced Trailer Wait**
 
+    -   $Trailer_Wait = \pi_0 + \pi_1 * Group_Producivity + \pi_2 * Total_Workers + Controls + \epsilon$
+
 -   Second Stage: Productivity is estimated
 
-How was the second lab study designed?
+    -   $Productivity = \beta_0 + \beta_1 * Trailer_Wait + Control + \epsilon$
 
-#### Manager Implications:
+$\hat{\beta_1} ^{IV} = \frac{Cov(Z, Y)}{Cov(Z, X)}$
+
+How was the second lab study designed?
