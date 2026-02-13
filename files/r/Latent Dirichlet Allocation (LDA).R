@@ -210,3 +210,25 @@ df_with_clusters <- df_with_clusters %>%
 library(writexl)
 
 write_xlsx(df_with_clusters, "fail_log_with_clusters.xlsx")
+
+
+library(tidytext)
+
+dtm_tidy <- tidy(dtm_clean)
+
+# View the tidy format
+head(dtm_tidy, 20)
+
+# Output:
+#   document term      count
+# 1        1 feeder        3
+# 2        1 system        2
+# 3        1 communication 1
+# 4        2 process       2
+# 5        2 stopped       1
+# ...
+
+# View in RStudio
+View(dtm_tidy)
+
+write_xlsx(dtm_tidy, "DTM.xlsx")

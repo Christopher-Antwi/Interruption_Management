@@ -1,0 +1,100 @@
+---
+title: "Microstructures_of_Work"
+format: html
+---
+
+# The Microstructure of Work: Understanding Productivity Benefits and Costs of Interruptions
+
+This research investigated how several different types of **Workplace Interruptions** influence the performance or productivity of manual laborers, with a focus in the agribusiness sector. The authors created a dual characteristic framework to better understand the effects of **Attention Shift** and **Physical Task Requirement**s on performance and productivity.
+
+**Contribution Areas:**
+
+-   Interruptions and Productivity
+
+-   Operational Planning with Interruptions
+
+-   Task Transitions and Worker Productivity
+
+### Hypothesis
+
+-   **Hypothesis 1A:** Pauses are positively associated with immediate postpause productivity.
+
+-   **Hypothesis 1B:** Pauses are positively associated with shift-level productivity.
+
+-   **Hypothesis 2A:** Breaks are negatively associated with immediate postbreak productivity.
+
+-   **Hypothesis 2B:** Breaks are positively associated with shift-level productivity.
+
+-   **Hypothesis 3A:** Surprises are negatively associated with immediate postsurprise productivity.
+
+-   **Hypothesis 3B:** Surprises are negatively associated with shift-level productivity.
+
+**Breaks:** Planned recesses from work designed to accommodate personal needs *(Jett and George 2003, Leroy et al. 2020)*
+
+**Breaks are observed in the form of short rest or lunch periods during work hours or as more extended periods, such as weekends or vacations.**
+
+Breaks reduce fatigue and replenish physical resources (Hunter and Wu 2016), aiding recovery.
+
+#### Question: Although, Continuous Direct-Compression rigs/processes are designed to be continuously run, could an imposed break NOT interruption improve the overall process? 
+
+Mental breaks can provide mental simulation when employees are performing monotonuous tasks *(Fisherl 1993*) and increase emotional well-being when used to engage in fulfilling and enjoyable activities *(Csikszentmihalyi 2000).*
+
+-   How can this be applied to a machine? Is there a way threshold for operating a rig?
+
+Surprises (or discrepancies) are interruption stimuli "associated with the current task" but often lead to a diversion of attention or focus in response to the surprise *(Pendem et al 2018)*
+
+**Interruptions can be understood as having two key, orthogonal characteristics:**
+
+-   ***Interruptions may require a physical switch to an alternate task. Those that involve a physical task change may not offer the benefit of physical replenishment central to much of the study of breaks***
+
+-   ***Interruptions may involve a relatively high or low level of attentional shift. Those with a high attentional shift incur cognitive restart costs when the individual returns to the focal tasks.***
+
+#### Field Study
+
+**Harvesting:**
+
+Fruit Harvesters are operated by a worker who navigates the equipment down a row of fruits in a field.
+
+Workers can maximize their speed by balancing their speed and clipper settings to suit plants flow through the sorter.
+
+-   Oscillating Clipper Shears Plants
+
+-   Elevator deposits good fruits into a fruit trailer
+
+-   When Trailer is fulll, tractor tows trailer to storage location (Empty Location in field)
+
+*The number of workers in a field field is predetermined at the beginning of the season and does not change within a region*
+
+**Pauses**: To capture **Pause** in the field setting, they utilized Trailer Wait Induced Delays (TW). An event is recognized when a focal worker completes a harvest load and observes no new unfilled trailer available at their location. The exogenuous cause of such absence is significantly a result of aberrations in the trucking operations and can generally be unavoidable in the harvesting industry. (Cell 2)
+
+**Breaks:** Workers stop the production process with their SCHEDULED Breaks. In this setting workers had two short scheduled breaks and a lunch. $Break_1 \to Lunch \to Break_2$ (Cell 1)
+
+**Surprises and Intrustions:**
+
+-   *Harvester Breakdowns*: Operator is responsible for determining the issue or root cause and intiate corrective action (CellL 3)
+
+-   *Intrustions::* Workers drive the harvesting equipment between fields than the harvester breakdown as the workers continue to drive the harvesting eqipment (Cell 4)
+
+Productivity Risk: Increased speed can cause "Clogs" in fruit harvester (Feeder Clogs)
+
+Productivity Risk: Failing to adjust clipper length can cause the clipper to "dig in" to the soil which creates :
+
+-    Uneven Spots in Soil
+
+-   Yield Massive Amounts of Soil
+
+-   Filling the Trailer Weight w/ Non-Fruit Weight
+
+**Figure 3**: Confused a bit about the graphic
+
+#### Solution Methodology
+
+**Field Study:** Econometric Model, 2SLS + IV
+
+-   First Stage: Trailer Wait as a Function of two Instruments **Average Productivity of Other Workers in the Same Field & Number of Other Workers in Group who Experienced Trailer Wait**
+
+-   Second Stage: Productivity is estimated
+
+How was the second lab study designed?
+
+#### Manager Implications:

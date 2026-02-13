@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Current_Notes_and_Log – Christopher Antwi</title>
+<title>Microstructures_of_Work – Christopher Antwi</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -161,13 +161,9 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#week-5-21-28-topic-modeling-lsa-lda" id="toc-week-5-21-28-topic-modeling-lsa-lda" class="nav-link active" data-scroll-target="#week-5-21-28-topic-modeling-lsa-lda">Week 5 2/1-2/8 Topic Modeling: LSA &amp; LDA</a>
+  <li><a href="#the-microstructure-of-work-understanding-productivity-benefits-and-costs-of-interruptions" id="toc-the-microstructure-of-work-understanding-productivity-benefits-and-costs-of-interruptions" class="nav-link active" data-scroll-target="#the-microstructure-of-work-understanding-productivity-benefits-and-costs-of-interruptions">The Microstructure of Work: Understanding Productivity Benefits and Costs of Interruptions</a>
   <ul class="collapse">
-  <li><a href="#latent-dirichlet-allocation" id="toc-latent-dirichlet-allocation" class="nav-link" data-scroll-target="#latent-dirichlet-allocation">Latent Dirichlet Allocation</a></li>
-  </ul></li>
-  <li><a href="#week-6-27-215-recreating-interrupted-continuity" id="toc-week-6-27-215-recreating-interrupted-continuity" class="nav-link" data-scroll-target="#week-6-27-215-recreating-interrupted-continuity">Week 6 2/7-2/15: Recreating Interrupted Continuity</a>
-  <ul class="collapse">
-  <li><a href="#interruption-creation" id="toc-interruption-creation" class="nav-link" data-scroll-target="#interruption-creation">Interruption Creation</a></li>
+  <li><a href="#hypothesis" id="toc-hypothesis" class="nav-link" data-scroll-target="#hypothesis">Hypothesis</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -177,7 +173,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Current_Notes_and_Log</h1>
+<h1 class="title">Microstructures_of_Work</h1>
 </div>
 
 
@@ -194,87 +190,82 @@ window.Quarto = {
 </header>
 
 
-<section id="week-5-21-28-topic-modeling-lsa-lda" class="level1">
-<h1>Week 5 2/1-2/8 Topic Modeling: LSA &amp; LDA</h1>
-<p>Topic modeling essentially treats each individual document in a collection of texts as a&nbsp;<a href="https://www.ibm.com/topics/bag-of-words">bag of words</a>&nbsp;model. This means that the topic modeling algorithm ignores word order and context, simply focusing on how often words occur, and how often they co-occur, within each individual document. (IBM).</p>
-<p>This is ideal because the inputs in the LogBook vary from person to person in length, detail, and context</p>
-<p>Document Term Matrix or DTM models the text dataset with documents as rows and individual words as columns, or vice-versa. Values in the matrix indicate the frequency with which a given word appears in each document. This matrix can then be used to generate a vector space, where&nbsp;<em>n</em>&nbsp;words equals&nbsp;<em>n</em>&nbsp;dimensions. A given row’s value indicates that document’s position in the vector space.&nbsp;</p>
-<p>Each topic is modeled as a probability distribution across a vocabulary of words. Each document in the collection is then represented in terms of those topics.&nbsp;In this way, topic models essentially attempt to reverse engineer the discourses (that is, topics) that produced the documents in question.</p>
-<p>Term frequency-inverse document frequency (TF-IDF) is a modification of bag of words intended to address the issues resulting from common yet semantically irrelevant words by accounting for each word’s prevalence throughout every document in a text set. Latent semantic analysis builds on TF-IDF with the principal intent of addressing polysemy and synonymy.</p>
-<p><a href="https://www.google.com/search?q=Polysemy&amp;sca_esv=fa30f98f2ff67e07&amp;ei=b--Fac3xIZaPm9cPtcfesQk&amp;biw=1272&amp;bih=674&amp;ved=2ahUKEwjMhbOH_8SSAxXDHjQIHeqfBYUQgK4QegQIARAC&amp;uact=5&amp;oq=polysemy+and+synonymy&amp;gs_lp=Egxnd3Mtd2l6LXNlcnAiFXBvbHlzZW15IGFuZCBzeW5vbnlteTIFEAAYgAQyBhAAGBYYHjILEAAYgAQYigUYhgMyCxAAGIAEGIoFGIYDMggQABiABBiiBDIIEAAYgAQYogQyBRAAGO8FSKcIUJsEWJsEcAF4AJABAJgBZ6ABZ6oBAzAuMbgBA8gBAPgBAZgCAqACeMICCRAAGAcYHhiwA8ICBxAAGB4YsAPCAgkQABgIGB4YsAPCAg4QABiABBiKBRiGAxiwA8ICCxAAGIAEGKIEGLADwgIIEAAY7wUYsAOYAwCIBgGQBgiSBwMxLjGgB6UEsgcDMC4xuAdwwgcDMi0yyAcNgAgB&amp;sclient=gws-wiz-serp&amp;mstk=AUtExfC9nkkcHjklTzcHHxYKH5_5HA0OB58SPC8TseZA4Evjy6zKQZDdDOJMibGqW4S1FIdabN4Vc_RdN-Vxqe1Dj8TvbHTf98z3JbV_xezhypZL1NJWTn2H1_W-M0DqEVphc2s&amp;csui=3"><em>Polysemy</em></a> <em>refers to a single word having multiple, related meanings (e.g., “crane” as a bird or machine), while&nbsp;<a href="https://www.google.com/search?q=synonymy&amp;sca_esv=fa30f98f2ff67e07&amp;ei=b--Fac3xIZaPm9cPtcfesQk&amp;biw=1272&amp;bih=674&amp;ved=2ahUKEwjMhbOH_8SSAxXDHjQIHeqfBYUQgK4QegQIARAD&amp;uact=5&amp;oq=polysemy+and+synonymy&amp;gs_lp=Egxnd3Mtd2l6LXNlcnAiFXBvbHlzZW15IGFuZCBzeW5vbnlteTIFEAAYgAQyBhAAGBYYHjILEAAYgAQYigUYhgMyCxAAGIAEGIoFGIYDMggQABiABBiiBDIIEAAYgAQYogQyBRAAGO8FSKcIUJsEWJsEcAF4AJABAJgBZ6ABZ6oBAzAuMbgBA8gBAPgBAZgCAqACeMICCRAAGAcYHhiwA8ICBxAAGB4YsAPCAgkQABgIGB4YsAPCAg4QABiABBiKBRiGAxiwA8ICCxAAGIAEGKIEGLADwgIIEAAY7wUYsAOYAwCIBgGQBgiSBwMxLjGgB6UEsgcDMC4xuAdwwgcDMi0yyAcNgAgB&amp;sclient=gws-wiz-serp&amp;mstk=AUtExfC9nkkcHjklTzcHHxYKH5_5HA0OB58SPC8TseZA4Evjy6zKQZDdDOJMibGqW4S1FIdabN4Vc_RdN-Vxqe1Dj8TvbHTf98z3JbV_xezhypZL1NJWTn2H1_W-M0DqEVphc2s&amp;csui=3">synonymy</a>&nbsp;involves different words sharing similar meanings&nbsp;(e.g., “big” and “large”).</em></p>
-<p><strong>Latent Semantic Analysis (LSA):</strong> deploys a technique known as singular value decomposition in order to reduce sparsity in the document-term matrix.</p>
-<p><a href="https://personal.math.vt.edu/embree/cmda3606/chapter6.pdf"><strong>Singular Value Decomposition</strong></a><strong>:</strong> is a factorization method in linear algebra that decomposes a matrix into three other matrices, providing a way to represent data in terms of its singular values.</p>
-<p><strong>SVD</strong> helps you split that table into three parts:</p>
+<section id="the-microstructure-of-work-understanding-productivity-benefits-and-costs-of-interruptions" class="level1">
+<h1>The Microstructure of Work: Understanding Productivity Benefits and Costs of Interruptions</h1>
+<p>This research investigated how several different types of <strong>Workplace Interruptions</strong> influence the performance or productivity of manual laborers, with a focus in the agribusiness sector. The authors created a dual characteristic framework to better understand the effects of <strong>Attention Shift</strong> and <strong>Physical Task Requirement</strong>s on performance and productivity.</p>
+<p><strong>Contribution Areas:</strong></p>
 <ul>
-<li><p><strong>U</strong>: This part tells you about the people (like their general preferences).</p></li>
-<li><p><strong>Σ</strong>: This part shows how important each factor is (how much each rating matters).</p></li>
-<li><p><strong>Vᵀ</strong>: This part tells you about the products (how similar they are to each other)</p></li>
+<li><p>Interruptions and Productivity</p></li>
+<li><p>Operational Planning with Interruptions</p></li>
+<li><p>Task Transitions and Worker Productivity</p></li>
 </ul>
-<p>Mathematically, the SVD of a matrix AA (of size m×nm×n) is represented as: <span class="math inline">\(A=UΣVTA=UΣVT\)</span></p>
-<p>Here:</p>
+<section id="hypothesis" class="level3">
+<h3 class="anchored" data-anchor-id="hypothesis">Hypothesis</h3>
 <ul>
-<li><p><span class="math inline">\(UU\)</span>: An <span class="math inline">\(m×mm×m\)</span> orthogonal matrix whose columns are the left singular vectors of <span class="math inline">\(AA\)</span>.</p></li>
-<li><p><span class="math inline">\(ΣΣ\)</span>: A diagonal <span class="math inline">\(m×nm×n\)</span> matrix containing the singular values of <span class="math inline">\(AA\)</span> in descending order.</p></li>
-<li><p><span class="math inline">\(VTVT:\)</span> The transpose of an n×nn×n orthogonal matrix, where the columns are the right singular vectors of <span class="math inline">\(AA\)</span>.</p></li>
+<li><p><strong>Hypothesis 1A:</strong> Pauses are positively associated with immediate postpause productivity.</p></li>
+<li><p><strong>Hypothesis 1B:</strong> Pauses are positively associated with shift-level productivity.</p></li>
+<li><p><strong>Hypothesis 2A:</strong> Breaks are negatively associated with immediate postbreak productivity.</p></li>
+<li><p><strong>Hypothesis 2B:</strong> Breaks are positively associated with shift-level productivity.</p></li>
+<li><p><strong>Hypothesis 3A:</strong> Surprises are negatively associated with immediate postsurprise productivity.</p></li>
+<li><p><strong>Hypothesis 3B:</strong> Surprises are negatively associated with shift-level productivity.</p></li>
 </ul>
-<p><strong>LSA</strong> produces a <strong>Document-Document Matrix</strong> and <strong>Term-Term Matrix</strong>. If the <strong>Document-Term Matrix</strong> dimensions are defined as&nbsp;<strong><em>d</em></strong> <strong>documents times&nbsp;<em>w</em>&nbsp;words</strong>, then the <strong>Document-Document Matrix</strong> is&nbsp;<strong><em>d</em></strong> <strong>times&nbsp;<em>d</em>&nbsp;and the Term-Term Matrix&nbsp;<em>w</em>&nbsp;times&nbsp;<em>w</em></strong>. Each value in the <strong>Document-Document Matrix</strong> indicates the number of words each document has in common. Each value in the term-term matrix indicates the number of documents in which two term co-occur.</p>
-<p>Once model dimensions have been reduced through singular value decomposition, the LSA algorithm compares documents in the lower dimensional space using cosine similarity. Cosine similarity signifies the measurement of the angle between two vectors in vector space. It may be any value between -1 and 1. The higher the cosine score, the more alike two documents are considered. Cosine similarity is represented by this formula, where&nbsp;<em>x</em>&nbsp;and&nbsp;<em>y</em>&nbsp;signify two item-vectors in the vector space</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="..\assets/img/LSA_Cosine.png" class="img-fluid figure-img"></p>
-<figcaption>Cosine Similiarity Formula</figcaption>
-</figure>
-</div>
-<section id="latent-dirichlet-allocation" class="level2">
-<h2 class="anchored" data-anchor-id="latent-dirichlet-allocation">Latent Dirichlet Allocation</h2>
-<p>is a probabilistic topic modeling algorithm that generates topics, classifying words and documents among these topics, according to probability distributions. Using the document-term matrix, the LDA algorithm generates topic distributions (that is, lists of keywords with respective probabilities) according to word frequency and co-occurrence.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="..\assets/img/LDA_Topic_Example.png" class="img-fluid figure-img"></p>
-<figcaption>LDA Model Partial Output Example</figcaption>
-</figure>
-</div>
-<p>When assigning topics to words, the LDA algorithm uses what is known as Gibbs sampling:</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="..\assets/img/LDA_Gibbs_Sampling_Formula.png" class="img-fluid figure-img"></p>
-<figcaption>LDA Gibbs Sampling Formula</figcaption>
-</figure>
-</div>
+<p><strong>Breaks:</strong> Planned recesses from work designed to accommodate personal needs <em>(Jett and George 2003, Leroy et al.&nbsp;2020)</em></p>
+<p><strong>Breaks are observed in the form of short rest or lunch periods during work hours or as more extended periods, such as weekends or vacations.</strong></p>
+<p>Breaks reduce fatigue and replenish physical resources (Hunter and Wu 2016), aiding recovery.</p>
+<section id="question-although-continuous-direct-compression-rigsprocesses-are-designed-to-be-continuously-run-could-an-imposed-break-not-interruption-improve-the-overall-process" class="level4">
+<h4 class="anchored" data-anchor-id="question-although-continuous-direct-compression-rigsprocesses-are-designed-to-be-continuously-run-could-an-imposed-break-not-interruption-improve-the-overall-process">Question: Although, Continuous Direct-Compression rigs/processes are designed to be continuously run, could an imposed break NOT interruption improve the overall process?</h4>
+<p>Mental breaks can provide mental simulation when employees are performing monotonuous tasks <em>(Fisherl 1993</em>) and increase emotional well-being when used to engage in fulfilling and enjoyable activities <em>(Csikszentmihalyi 2000).</em></p>
 <ul>
-<li><p>The first ratio expresses the <strong>Probability of Topic <em>t</em> in Document <em>d</em></strong>. The algorithm calculates this probability according to the number of words in document <em>d</em> that belong to topic <em>t</em>. This essentially asks: <em>How Prevalent is Topic t in Document d?</em></p></li>
-<li><p>The second ratio expresses the <strong>Probability of Word <em>w</em> Belonging to Topic <em>t</em></strong>. The algorithm calculates this probability by enumerating the occurrences of <em>w</em> in <em>t</em> over all word-tokens in <em>t</em>. This asks: <em>With What Frequency Does Word w Appear in Topic t Throughout the Rest of The Corpus?</em></p></li>
+<li>How can this be applied to a machine? Is there a way threshold for operating a rig?</li>
+</ul>
+<p>Surprises (or discrepancies) are interruption stimuli “associated with the current task” but often lead to a diversion of attention or focus in response to the surprise <em>(Pendem et al 2018)</em></p>
+<p><strong>Interruptions can be understood as having two key, orthogonal characteristics:</strong></p>
+<ul>
+<li><p><strong><em>Interruptions may require a physical switch to an alternate task. Those that involve a physical task change may not offer the benefit of physical replenishment central to much of the study of breaks</em></strong></p></li>
+<li><p><strong><em>Interruptions may involve a relatively high or low level of attentional shift. Those with a high attentional shift incur cognitive restart costs when the individual returns to the focal tasks.</em></strong></p></li>
 </ul>
 </section>
+<section id="field-study" class="level4">
+<h4 class="anchored" data-anchor-id="field-study">Field Study</h4>
+<p><strong>Harvesting:</strong></p>
+<p>Fruit Harvesters are operated by a worker who navigates the equipment down a row of fruits in a field.</p>
+<p>Workers can maximize their speed by balancing their speed and clipper settings to suit plants flow through the sorter.</p>
+<ul>
+<li><p>Oscillating Clipper Shears Plants</p></li>
+<li><p>Elevator deposits good fruits into a fruit trailer</p></li>
+<li><p>When Trailer is fulll, tractor tows trailer to storage location (Empty Location in field)</p></li>
+</ul>
+<p><em>The number of workers in a field field is predetermined at the beginning of the season and does not change within a region</em></p>
+<p><strong>Pauses</strong>: To capture <strong>Pause</strong> in the field setting, they utilized Trailer Wait Induced Delays (TW). An event is recognized when a focal worker completes a harvest load and observes no new unfilled trailer available at their location. The exogenuous cause of such absence is significantly a result of aberrations in the trucking operations and can generally be unavoidable in the harvesting industry. (Cell 2)</p>
+<p><strong>Breaks:</strong> Workers stop the production process with their SCHEDULED Breaks. In this setting workers had two short scheduled breaks and a lunch. <span class="math inline">\(Break_1 \to Lunch \to Break_2\)</span> (Cell 1)</p>
+<p><strong>Surprises and Intrustions:</strong></p>
+<ul>
+<li><p><em>Harvester Breakdowns</em>: Operator is responsible for determining the issue or root cause and intiate corrective action (CellL 3)</p></li>
+<li><p><em>Intrustions::</em> Workers drive the harvesting equipment between fields than the harvester breakdown as the workers continue to drive the harvesting eqipment (Cell 4)</p></li>
+</ul>
+<p>Productivity Risk: Increased speed can cause “Clogs” in fruit harvester (Feeder Clogs)</p>
+<p>Productivity Risk: Failing to adjust clipper length can cause the clipper to “dig in” to the soil which creates :</p>
+<ul>
+<li><p>Uneven Spots in Soil</p></li>
+<li><p>Yield Massive Amounts of Soil</p></li>
+<li><p>Filling the Trailer Weight w/ Non-Fruit Weight</p></li>
+</ul>
+<p><strong>Figure 3</strong>: Confused a bit about the graphic</p>
 </section>
-<section id="week-6-27-215-recreating-interrupted-continuity" class="level1">
-<h1>Week 6 2/7-2/15: Recreating Interrupted Continuity</h1>
-<section id="interruption-creation" class="level3">
-<h3 class="anchored" data-anchor-id="interruption-creation">Interruption Creation</h3>
+<section id="solution-methodology" class="level4">
+<h4 class="anchored" data-anchor-id="solution-methodology">Solution Methodology</h4>
+<p><strong>Field Study:</strong> Econometric Model, 2SLS + IV</p>
 <ul>
-<li><p><strong>Merck Provided Dataset</strong></p>
-<ul>
-<li><p>121 Hours &amp; 18 Minutes of Run time</p></li>
-<li><p>Dates: 1/12/18 - 1/17/18</p></li>
-<li><p>300 Million Data Points from <strong>Feeding, Blenders, Tablet Press</strong></p></li>
-<li><p>Interruptions: [0,1]: Derived from Machine Data + LogBook</p>
-<ul>
-<li><strong>Interruptions are captured when Key Process Parameters like Mass Flow Measurements across Multiple Feeders &amp; Blenders or Filling Shoe Speed in Tablet Press is equal to 0</strong></li>
-</ul></li>
-</ul></li>
-<li><p><strong>Exogenous Interruptions:</strong></p>
-<ul>
-<li><p><strong>Communication Errors</strong>: A communication alarm resulted in a process stop</p></li>
-<li><p><strong>Material Flow Interruptions</strong>: A void created by the vacuum wand, empty refills or powder buildup resulted in process stoppages</p></li>
-<li><p><strong>Software Glitch:</strong> A loss of information for the entire campaign caused totals to restart and reset to zero, leading to a system stop</p></li>
-<li><p><strong>Compression Force Compensator:</strong> A read/write difference and a change of the set-point resulted in a process stop.</p></li>
+<li><p>First Stage: Trailer Wait as a Function of two Instruments <strong>Average Productivity of Other Workers in the Same Field &amp; Number of Other Workers in Group who Experienced Trailer Wait</strong></p></li>
+<li><p>Second Stage: Productivity is estimated</p></li>
 </ul>
-<h3 id="the-microstructure-of-work-understanding-productivity-benefits-and-costs-of-interruptions" class="anchored">The Microstructure of Work: Understanding Productivity Benefits and Costs of Interruptions</h3></li>
-<li><p>To read about: <em>End of day breaks and next day performance</em> <em>(Binnewies et al.&nbsp;2009, Dai et al 2015, Cai et al 2018.)</em></p></li>
-<li></li>
-</ul>
+<p>How was the second lab study designed?</p>
+</section>
+<section id="manager-implications" class="level4">
+<h4 class="anchored" data-anchor-id="manager-implications">Manager Implications:</h4>
 
 
+</section>
 </section>
 </section>
 

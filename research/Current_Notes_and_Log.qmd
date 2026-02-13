@@ -3,7 +3,7 @@ title: "Current_Notes_and_Log"
 format: html
 ---
 
-# Week 5 2/1-2/8
+# Week 5 2/1-2/8 Topic Modeling: LSA & LDA
 
 Topic modeling essentially treats each individual document in a collection of texts as a [bag of words](https://www.ibm.com/topics/bag-of-words) model. This means that the topic modeling algorithm ignores word order and context, simply focusing on how often words occur, and how often they co-occur, within each individual document. (IBM).
 
@@ -58,3 +58,35 @@ When assigning topics to words, the LDA algorithm uses what is known as Gibbs sa
 -   The first ratio expresses the **Probability of Topic *t* in Document *d***. The algorithm calculates this probability according to the number of words in document *d* that belong to topic *t*. This essentially asks: *How Prevalent is Topic t in Document d?*
 
 -   The second ratio expresses the **Probability of Word *w* Belonging to Topic *t***. The algorithm calculates this probability by enumerating the occurrences of *w* in *t* over all word-tokens in *t*. This asks: *With What Frequency Does Word w Appear in Topic t Throughout the Rest of The Corpus?*
+
+# Week 6 2/7-2/15: Recreating Interrupted Continuity
+
+### Interruption Creation
+
+-   **Merck Provided Dataset**
+
+    -   121 Hours & 18 Minutes of Run time
+
+    -   Dates: 1/12/18 - 1/17/18
+
+    -   300 Million Data Points from **Feeding, Blenders, Tablet Press**
+
+    -   Interruptions: \[0,1\]: Derived from Machine Data + LogBook
+
+        -   **Interruptions are captured when Key Process Parameters like Mass Flow Measurements across Multiple Feeders & Blenders or Filling Shoe Speed in Tablet Press is equal to 0**
+
+-   **Exogenous Interruptions:**
+
+    -   **Communication Errors**: A communication alarm resulted in a process stop
+
+    -   **Material Flow Interruptions**: A void created by the vacuum wand, empty refills or powder buildup resulted in process stoppages
+
+    -   **Software Glitch:** A loss of information for the entire campaign caused totals to restart and reset to zero, leading to a system stop
+
+    -   **Compression Force Compensator:** A read/write difference and a change of the set-point resulted in a process stop.
+
+    ### The Microstructure of Work: Understanding Productivity Benefits and Costs of Interruptions
+
+-   To read about: *End of day breaks and next day performance* *(Binnewies et al. 2009, Dai et al 2015, Cai et al 2018.)*
+
+-   
