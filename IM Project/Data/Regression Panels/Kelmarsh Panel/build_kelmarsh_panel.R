@@ -3,32 +3,36 @@
 #   scada_10min_core.parquet + turbine_events.rds + turbine_static.rds
 #   + kelmarsh_stop_classes.csv (the wind "Table A1" rulebook)
 #   -> kelmarsh_panel.parquet     turbine x slot panel
-#   -> kelmarsh_episodes.rds      machine-side stop episodes + log match
-#   -> kelmarsh_log_stops.rds     classified log stops + match result
+#   -> kelmarsh_episodes.rds      stop episodes from the event log
 #
-# Same two-source logic as construct_interruptions.R (CDC-50):
+# Interruptions come straight from the turbine event log, no SCADA
+# matching. CDC-50 needed +-30 min matching because its logbook was
+# hand-written and approximate. The Kelmarsh log is written by the
+# turbine controller to the second, so a stop maps to its slots by
+# exact time overlap. Matching would only lose stops when SCADA is
+# blank (most grid losses).
 #
-#   1. MACHINE SIDE. A slot is stopped when the turbine produced nothing
-#      at some point in the interval although the wind could drive it:
-#        power_minimum_kw <= 0  AND  wind_speed_m_s >= CUT_IN
-#      (CDC-50: key flows / shoe speed == 0). Consecutive stopped slots
-#      of one turbine = one machine episode. NA power counts as NOT
-#      stopped, as in CDC-50 (coalesce(.x == 0, FALSE)).
-#   2. LOGBOOK SIDE. Every controller "Stop" in the event log gets a
-#      class from kelmarsh_stop_classes.csv:
-#        exogenous: Grid, Environment, Fault, Comm, Requested
+#   1. CLASSIFY. Every controller "Stop" gets a class from
+#      kelmarsh_stop_classes.csv (edit that file to re-class a code):
+#        exogenous: Grid, Environment, Fault (incl. forced outages),
+#                   Comm, Requested
 #        separate : Manual   (timing chosen; labor / recovery angle)
-#        excluded : Routine  (battery & brake tests, cable unwind ...
-#                             the analogue of CDC-50 pit stops)
-#   3. MATCH. Log stops are taken in time order; each is matched to the
-#      earliest still-unmatched machine episode of the same turbine
-#      whose start is within +-MATCH_WIN of the log start (CDC-50:
-#      +-30 min, sequential, non-overwriting). The episode inherits
-#      the log stop's class.
-#        Interruption        = 1 : episode matched to an exogenous stop
-#        Interruption_<Class>    : the class split (Grid ~ Feeding role)
-#        Interruption_Manual     : matched to a manual stop (NOT in
-#                                  Interruption)
+#        excluded : Routine  (battery & brake tests, cable unwind, oil
+#                             flushing: the analogue of CDC-50 pit stops)
+#   2. EPISODES. Stops on one turbine that overlap or touch (gap <=
+#      EPISODE_GAP) chain into one episode. Its class is the class of
+#      its first exogenous stop; else Manual if it has one; else
+#      Routine. A routine battery test just before a grid loss therefore
+#      cannot hide the grid loss.
+#   3. LOW-WIND STOPS. An episode starting while the wind is below CUT_IN
+#      cost no output (the turbine would be idle anyway). It is flagged
+#      low_wind = TRUE and, with DROP_LOW_WIND, kept out of Interruption.
+#      Unknown wind (SCADA blank, typical in grid losses) is kept IN.
+#   4. SLOTS. A slot is flagged when an episode overlaps [slot, slot+w):
+#        stop_any          any Stop episode (all classes)
+#        Interruption      exogenous episode (not low-wind)
+#        Interruption_<C>  class split (Grid ~ Interruption_Feeding)
+#        Interruption_Manual  manual episode (NOT part of Interruption)
 #
 #   CDC-50                         Kelmarsh
 #   Speed                          Power
@@ -36,10 +40,6 @@
 #   Weight_SD                      Power_SD
 #   Press temp / humidity          Wind_Speed, Wind_Speed_SD, Ambient_Temp
 #   Date_FE / Hour_FE              Date_FE / Hour_FE / Turbine_FE
-#
-# Robustness layer: log_stop_any / log_Interruption flag slots straight
-# from the log (no SCADA confirmation). They matter because SCADA is
-# often missing during grid losses, which the machine side cannot see.
 # ============================================================
 suppressPackageStartupMessages({
   library(data.table)
@@ -48,13 +48,14 @@ suppressPackageStartupMessages({
 })
 
 # ---- config ----------------------------------------------------------------
-PANEL_WIDTH  <- "10 minutes"     # native SCADA grain (multiples of 10 min ok)
-BUCKET_WIDTH <- "6 hours"        # concentration-metric T_n
-CUT_IN       <- 4                # m/s; MM92 cut-in is ~3, 4 avoids edge noise
-MATCH_WIN    <- 20 * 60          # seconds; log times are exact, slots 10 min
-EXOG_CLASSES <- c("Grid", "Environment", "Fault", "Comm", "Requested")
-FLAG_CLASSES <- c(EXOG_CLASSES, "Manual")
-N_LEADLAG    <- 6
+PANEL_WIDTH   <- "10 minutes"    # native SCADA grain (multiples of 10 min ok)
+BUCKET_WIDTH  <- "6 hours"       # concentration-metric T_n
+EPISODE_GAP   <- 0               # seconds; 0 = chain only overlapping/touching stops
+CUT_IN        <- 4               # m/s; MM92 cut-in is ~3, 4 avoids edge noise
+DROP_LOW_WIND <- TRUE            # keep low-wind stops out of Interruption
+EXOG_CLASSES  <- c("Grid", "Environment", "Fault", "Comm", "Requested")
+FLAG_CLASSES  <- c(EXOG_CLASSES, "Manual")
+N_LEADLAG     <- 6
 
 clean_dir  <- "C:/Users/cantwi/Dropbox/Interruption Management/IM Project/Data/Source Data/Wind Farm Data/Clean"
 out_dir    <- "C:/Users/cantwi/Dropbox/Interruption Management/IM Project/Data/Source Data/Wind Farm Data/Panel"
@@ -69,29 +70,13 @@ Tn_min <- bucket_sec / 60
 floor_to <- function(t, sec) as.POSIXct(floor(as.numeric(t) / sec) * sec,
                                         origin = "1970-01-01", tz = "UTC")
 
-# ---- 1. SCADA: machine-side stop flag at 10 min, then slot means ------------
+# ---- 1. SCADA -> slot -------------------------------------------------------
 core <- as.data.table(read_parquet(file.path(clean_dir, "scada_10min_core.parquet")))
 static <- readRDS(file.path(clean_dir, "turbine_static.rds"))
 rated <- setNames(static$rated_power_kw, static$turbine)
 
-core[, m_stop := fcoalesce(power_minimum_kw <= 0 & wind_speed_m_s >= CUT_IN, FALSE)]
-setkey(core, turbine, timestamp)
-core[, m_ep := { r <- rleid(m_stop); fifelse(m_stop, r, NA_integer_) }, by = turbine]
-core[!is.na(m_ep), m_ep := .GRP, by = .(turbine, m_ep)]
-
-episodes <- core[!is.na(m_ep), .(
-  ep_start     = min(timestamp),
-  ep_end       = max(timestamp) + 600,             # end of last stopped slot
-  n_slots      = .N,
-  wind_at_stop = mean(wind_speed_m_s, na.rm = TRUE)
-), by = .(turbine, episode_id = m_ep)]
-episodes[, duration_min := as.numeric(difftime(ep_end, ep_start, units = "mins"))]
-
 core[, slot := floor_to(timestamp, panel_sec)]
 scada_slot <- core[, .(
-  stop_any      = as.integer(any(m_stop)),
-  stop_share    = mean(m_stop),
-  episode_id    = if (all(is.na(m_ep))) NA_integer_ else min(m_ep, na.rm = TRUE),
   Power         = mean(power_kw, na.rm = TRUE),
   Power_Min     = min(power_minimum_kw, na.rm = TRUE),
   Power_SD      = mean(power_standard_deviation_kw, na.rm = TRUE),
@@ -117,70 +102,73 @@ scada_slot[, Perf_Ratio := fifelse(Potential > 0.05 * rated[as.character(turbine
                                    Power / Potential, NA_real_)]
 scada_slot[, Wind_Bin := floor(Wind_Speed)]
 
-# ---- 2. logbook: classify every Stop with the rulebook ---------------------
+# ---- 2. classify logged stops with the rulebook -----------------------------
 classes <- fread(class_file, encoding = "UTF-8")[, .(code, class)]
 ev <- readRDS(file.path(clean_dir, "turbine_events.rds"))
-log_stops <- ev[status == "Stop" & dup_cross_year == FALSE & dup_exact == FALSE & !is.na(start)]
+stops <- ev[status == "Stop" & dup_cross_year == FALSE & dup_exact == FALSE & !is.na(start)]
 rm(ev); invisible(gc(verbose = FALSE))
-log_stops <- merge(log_stops, classes, by = "code", all.x = TRUE)
-unknown <- log_stops[is.na(class), unique(code)]
+stops <- merge(stops, classes, by = "code", all.x = TRUE)
+unknown <- stops[is.na(class), unique(code)]
 if (length(unknown)) {
-  message("Codes missing from the rulebook (classed Fault if IEC Forced outage, else Unclassified): ",
+  message("Codes missing from the rulebook (Fault if IEC Forced outage, else Routine): ",
           paste(unknown, collapse = ", "))
-  log_stops[is.na(class), class := fifelse(iec_category %in% "Forced outage", "Fault", "Unclassified")]
+  stops[is.na(class), class := fifelse(iec_category %in% "Forced outage", "Fault", "Routine")]
 }
-log_stops[, exogenous := class %in% EXOG_CLASSES]
-log_stops[is.na(end), end := start + 600]
-setorder(log_stops, start)
-log_stops[, log_id := .I]
+n_open <- sum(is.na(stops$end))
+stops[is.na(end), end := start + 600]                # open-ended: one slot
 
-# ---- 3. sequential +-MATCH_WIN matching (non-overwriting) -------------------
-episodes[, `:=`(matched_log_id = NA_integer_, class = NA_character_)]
-log_stops[, matched_episode := NA_integer_]
-to_match <- log_stops[class %in% FLAG_CLASSES]
-for (tb in unique(episodes$turbine)) {
-  e_idx <- which(episodes$turbine == tb)
-  e_st  <- as.numeric(episodes$ep_start[e_idx])
-  free  <- rep(TRUE, length(e_idx))
-  L <- to_match[turbine == tb]
-  for (i in seq_len(nrow(L))) {
-    cand <- which(free & abs(e_st - as.numeric(L$start[i])) <= MATCH_WIN)
-    if (length(cand)) {
-      j <- cand[1]; free[j] <- FALSE
-      set(episodes, e_idx[j], c("matched_log_id", "class"), list(L$log_id[i], L$class[i]))
-      set(log_stops, L$log_id[i], "matched_episode", episodes$episode_id[e_idx[j]])
-    }
-  }
-}
-episodes <- merge(episodes,
-                  log_stops[, .(matched_log_id = log_id, log_start = start, log_end = end,
-                                log_code = code, log_message = message, log_iec = iec_category)],
-                  by = "matched_log_id", all.x = TRUE)
-episodes[, Interruption := as.integer(class %in% EXOG_CLASSES)]
+# ---- 3. stops -> episodes ---------------------------------------------------
+setorder(stops, turbine, start)
+stops[, run_end := cummax(as.numeric(end)), by = turbine]
+stops[, episode_id := cumsum(c(TRUE, as.numeric(start[-1]) > head(run_end, -1) + EPISODE_GAP)),
+      by = turbine]
+stops[, episode_id := .GRP, by = .(turbine, episode_id)]
+
+episodes <- stops[, {
+  ex <- which(class %in% EXOG_CLASSES)
+  k  <- if (length(ex)) ex[1] else if (any(class == "Manual")) which(class == "Manual")[1] else 1L
+  .(ep_start   = min(start),
+    ep_end     = as.POSIXct(max(run_end), origin = "1970-01-01", tz = "UTC"),
+    n_stops    = .N,
+    class      = if (length(ex) || any(class == "Manual")) class[k] else "Routine",
+    code       = code[k], message = message[k], iec_category = iec_category[k],
+    classes_in_episode = paste(unique(class), collapse = "+"))
+}, by = .(turbine, episode_id)]
+episodes[, duration_min := as.numeric(difftime(ep_end, ep_start, units = "mins"))]
+
+# wind when the episode starts (slot containing ep_start)
+episodes[, slot := floor_to(ep_start, panel_sec)]
+episodes <- merge(episodes, scada_slot[, .(turbine, slot, wind_at_start = Wind_Speed)],
+                  by = c("turbine", "slot"), all.x = TRUE)
+episodes[, slot := NULL]
+episodes[, low_wind := fcoalesce(wind_at_start < CUT_IN, FALSE)]   # unknown wind kept in
+episodes[, Interruption := as.integer(class %in% EXOG_CLASSES & !(DROP_LOW_WIND & low_wind))]
 for (cl in FLAG_CLASSES) set(episodes, j = paste0("Interruption_", cl),
-                             value = as.integer(episodes$class %in% cl))
+  value = as.integer(episodes$class == cl & !(DROP_LOW_WIND & episodes$low_wind)))
 setcolorder(episodes, c("turbine", "episode_id", "ep_start", "ep_end", "duration_min",
-                        "n_slots", "class", "Interruption"))
+                        "class", "Interruption", "low_wind", "wind_at_start"))
 setorder(episodes, turbine, ep_start)
 
-# ---- 4. slot flags: matched (two-source) and log-only (robustness) ----------
+# ---- 4. episodes -> slot flags (exact overlap) ------------------------------
 ep_flags <- c("Interruption", paste0("Interruption_", FLAG_CLASSES))
-panel <- merge(scada_slot, episodes[, c("turbine", "episode_id", ep_flags), with = FALSE],
-               by = c("turbine", "episode_id"), all.x = TRUE)
-for (v in ep_flags) set(panel, which(is.na(panel[[v]])), v, 0L)
+iv <- episodes[, c("turbine", "episode_id", ep_flags), with = FALSE]
+iv[, `:=`(s0 = as.numeric(episodes$ep_start),
+          s1 = pmax(as.numeric(episodes$ep_end), as.numeric(episodes$ep_start) + 1))]
+gr <- scada_slot[, .(turbine, slot, s0 = as.numeric(slot), s1 = as.numeric(slot) + panel_sec)]
+setkey(iv, turbine, s0, s1); setkey(gr, turbine, s0, s1)
+ov <- foverlaps(gr, iv, type = "any", nomatch = NULL)[i.s0 < s1 & s0 < i.s1]
+ov[, cover := pmin(s1, i.s1) - pmax(s0, i.s0)]
+flag_slot <- ov[, c(list(stop_any = 1L,
+                         stop_share = min(1, sum(cover) / panel_sec),
+                         episode_id = episode_id[1]),
+                    lapply(.SD, function(z) as.integer(any(z == 1L)))),
+                by = .(turbine, slot), .SDcols = ep_flags]
 
-# log-only: slot overlaps any Stop (non-routine) / an exogenous Stop in the log
-lg <- log_stops[class != "Routine", .(turbine, exogenous, s0 = as.numeric(start),
-                                      s1 = pmax(as.numeric(end), as.numeric(start) + 1))]
-gr <- panel[, .(turbine, slot, s0 = as.numeric(slot), s1 = as.numeric(slot) + panel_sec)]
-setkey(lg, turbine, s0, s1); setkey(gr, turbine, s0, s1)
-ov <- foverlaps(gr, lg, type = "any", nomatch = NULL)[i.s0 < s1 & s0 < i.s1]
-log_flags <- ov[, .(log_stop_any = 1L, log_Interruption = as.integer(any(exogenous))),
-                by = .(turbine, slot)]
-panel <- merge(panel, log_flags, by = c("turbine", "slot"), all.x = TRUE)
-panel[is.na(log_stop_any), `:=`(log_stop_any = 0L, log_Interruption = 0L)]
+panel <- merge(scada_slot, flag_slot, by = c("turbine", "slot"), all.x = TRUE)
+for (v in c("stop_any", ep_flags)) set(panel, which(is.na(panel[[v]])), v, 0L)
+panel[is.na(stop_share), stop_share := 0]
 
-# ---- 5. concentration metrics at BUCKET_WIDTH (matched exogenous episodes) --
+# ---- 5. concentration metrics at BUCKET_WIDTH (per turbine) -----------------
 episodes[, bucket := floor_to(ep_start, bucket_sec)]
 bucket_metrics <- episodes[Interruption == 1L, {
   tau <- as.numeric(difftime(ep_start, bucket, units = "mins")) / Tn_min
@@ -216,7 +204,7 @@ for (k in seq_len(N_LEADLAG)) {
   panel <- lag_k[panel, on = .(turbine, slot)]
 }
 setcolorder(panel, c("turbine", "slot", "bucket", "Date", "Hour", "stop_any", "stop_share",
-                     "episode_id", ep_flags, "log_stop_any", "log_Interruption"))
+                     "episode_id", ep_flags))
 setkey(panel, turbine, slot)
 
 # ---- save -------------------------------------------------------------------
@@ -224,20 +212,27 @@ stamp <- gsub(" ", "", tolower(PANEL_WIDTH))
 write_parquet(panel, file.path(out_dir, "kelmarsh_panel.parquet"), compression = "zstd")
 write_parquet(panel, file.path(out_dir, paste0("kelmarsh_panel_", stamp, ".parquet")),
               compression = "zstd")
-saveRDS(episodes,  file.path(out_dir, "kelmarsh_episodes.rds"))
-saveRDS(log_stops, file.path(out_dir, "kelmarsh_log_stops.rds"))
+saveRDS(episodes, file.path(out_dir, "kelmarsh_episodes.rds"))
+old <- file.path(out_dir, "kelmarsh_log_stops.rds")          # from the matched version
+if (file.exists(old)) invisible(file.remove(old))
 
 # ---- checks -----------------------------------------------------------------
 cat("panel:", nrow(panel), "rows x", ncol(panel), "cols at", PANEL_WIDTH, "| buckets:", BUCKET_WIDTH, "\n")
-cat("machine episodes:", nrow(episodes), "| median", median(episodes$duration_min), "min",
-    "| matched to log:", sum(!is.na(episodes$class)), "\n")
-cat("matched episodes by class:\n"); print(episodes[!is.na(class), .N, by = class][order(-N)])
-cat("log stops by class, share matched to a machine episode:\n")
-print(log_stops[, .(stops = .N, matched = sum(!is.na(matched_episode)),
-                    pct = round(100 * mean(!is.na(matched_episode)))), by = class][order(-stops)])
+cat("logged stops:", nrow(stops), "(open-ended set to 10 min:", n_open, ") ->", nrow(episodes), "episodes\n")
+print(episodes[, .(episodes = .N, low_wind = sum(low_wind), in_treatment = sum(Interruption) +
+                     sum(Interruption_Manual), median_min = round(median(duration_min), 1),
+                   wind_unknown = sum(is.na(wind_at_start))), by = class][order(-episodes)])
 cat("slots: stop_any", sum(panel$stop_any), "| Interruption", sum(panel$Interruption),
-    "| Manual", sum(panel$Interruption_Manual), "| log_Interruption", sum(panel$log_Interruption),
-    "| Treated", sum(panel$Treated), "\n")
+    "| Manual", sum(panel$Interruption_Manual), "| Treated", sum(panel$Treated), "\n")
 cat("treated buckets:", nrow(bucket_metrics), "| multi-event:", bucket_metrics[N_Interruptions > 1, .N], "\n")
-cat("RIF-style sample:", panel[!(stop_any == 1 & Interruption == 0) & !is.na(Wind_Speed), .N],
-    "rows,", panel[!(stop_any == 1 & Interruption == 0) & !is.na(Wind_Speed), sum(Interruption)], "interrupted\n")
+smp <- panel[!(stop_any == 1 & Interruption == 0)]
+cat("RIF-style sample (drop non-exogenous stop slots):", nrow(smp), "rows,", sum(smp$Interruption),
+    "interrupted, of which", smp[Interruption == 1, sum(is.na(Wind_Speed))], "have no wind reading\n")
+# DEFAULT (10 min / 6 h / gap 0 / cut-in 4, low-wind dropped) -- 2026-11-11:
+#   7,045 logged stops -> 7,026 episodes
+#   exogenous episodes in Interruption 1,459 (Fault 614, Environment 394,
+#     Grid 374, Requested 76, Comm 1); 459 exogenous low-wind episodes left out
+#   Manual episodes 851 (316 low-wind left out); Routine 3,941
+#   slots stop_any 103,452 | Interruption 46,546 | Manual 22,082
+#   treated buckets 929, 254 multi-event
+#   (SCADA-matched version had 816 exogenous episodes / 6,314 slots)
