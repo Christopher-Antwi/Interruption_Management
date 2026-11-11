@@ -1,0 +1,225 @@
+---
+title: "Kelmarsh Wind Farm Data Dictionary"
+subtitle: "Clean outputs of clean_kelmarsh.R — 6 x Senvion MM92, 2016–2024"
+author: "Christopher Antwi"
+date: today
+format:
+  html:
+    theme: cosmo
+    toc: true
+    code-fold: true
+    embed-resources: true
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+library(tidyverse)
+library(kableExtra)
+library(arrow)
+
+clean_dir <- "C:/Users/cantwi/Dropbox/Interruption Management/IM Project/Data/Source Data/Wind Farm Data/Clean"
+core   <- read_parquet(file.path(clean_dir, "scada_10min_core.parquet"))
+events <- readRDS(file.path(clean_dir, "turbine_events.rds"))
+stops  <- readRDS(file.path(clean_dir, "turbine_stops.rds"))
+static <- readRDS(file.path(clean_dir, "turbine_static.rds"))
+coldict <- read_csv(file.path(clean_dir, "column_dictionary.csv"), show_col_types = FALSE)
+pmu_cols  <- names(read_parquet(file.path(clean_dir, "pmu_10min.parquet"), as_data_frame = FALSE))
+grid_cols <- names(read_parquet(file.path(clean_dir, "grid_meter_10min.parquet"), as_data_frame = FALSE))
+
+tbl <- function(df, ...) kbl(df, ...) |>
+  kable_styling(bootstrap_options = c("striped", "condensed", "hover"), full_width = FALSE)
+```
+
+**Source.** Cubico Sustainable Investments, *Kelmarsh wind farm data*, Zenodo record
+16807551 (August 2025 release, CC-BY-4.0). Six Senvion MM92 turbines (2,050 kW rated,
+92 m rotor) near Kelmarsh, Northamptonshire, UK. Data were exported from Cubico's
+secondary SCADA system (Greenbyte). All timestamps are **UTC** and mark the **start**
+of a 10-minute interval. The source has no published signal-level dictionary: the only
+official reference is `Kelmarsh_WT_dataSignalMapping.csv` (60 signals). The
+descriptions below are therefore written from the Greenbyte header names, their units,
+and the data themselves. Entries marked *(inferred)* should be checked against domain
+knowledge before you rely on them.
+
+This document is generated from the files in `Clean/`, so all counts and NA rates
+reflect the current outputs.
+
+# Output files
+
+```{r files}
+files <- tribble(
+  ~file, ~grain, ~contents,
+  "scada_10min/scada_10min_<year>.parquet", "turbine x 10-min", "All ~310 SCADA signals, one file per year (2016-2024). Signals missing in a year are absent from that file; use arrow::open_dataset(dir, unify_schemas = TRUE) to stack them.",
+  "scada_10min_core.parquet", "turbine x 10-min", "2016-2024 stacked; key signals only (see below).",
+  "turbine_events.rds", "one row per event", "Every status/event log row, with parsed times and repeat flags.",
+  "turbine_stops.rds", "one row per stop event", "Subset of turbine_events with status == 'Stop'.",
+  "turbine_static.rds", "turbine", "Coordinates, hub height, rotor, rated power, commercial operations date.",
+  "pmu_10min.parquet", "10-min (site)", "Substation power-management-unit meter, 2016-01-09 to 2024-12-31.",
+  "grid_meter_10min.parquet", "10-min (site)", "Fiscal grid meter, 2016-01-01 to 2022-12-31 (not published for 2023-24).",
+  "device_events.rds", "one row per event", "Status logs for the PMU and grid meter.",
+  "signal_mapping.rds", "signal", "Greenbyte signal id -> Greenbyte title -> Senvion title -> unit (60 signals).",
+  "column_dictionary.csv", "column", "Clean column name <-> original Greenbyte header, years present.",
+  "cleaning_log.txt", "-", "Row counts, duplicates, screened values from the last run.")
+tbl(files)
+```
+
+# Turbines
+
+```{r static}
+static |>
+  select(turbine, title, identity, model, rated_power_kw, hub_height_m,
+         rotor_diameter_m, latitude, longitude, elevation_m, commercial_operations_date) |>
+  tbl()
+```
+
+Turbines 3 and 6 have a 68.5 m hub; the others are 78.5 m. That matters for any
+wind-speed comparison across turbines.
+
+# Core SCADA panel (`scada_10min_core.parquet`)
+
+Every row is one turbine and one 10-minute interval. Measurement signals are 10-minute
+means unless the name says standard deviation, minimum, maximum, or the unit is energy
+(kWh, which is the total for the interval). Missing or erroneous values are `NA`.
+
+```{r core}
+desc <- c(
+  turbine = "Turbine number 1-6 (key).",
+  timestamp = "Start of the 10-min interval, POSIXct UTC (key).",
+  year = "Calendar year of the source file.",
+  src_row_missing = "TRUE if the interval was absent from the source file and inserted to complete the grid (all signals NA). Zero such rows in the current build.",
+  wind_speed_m_s = "Nacelle anemometer wind speed, 10-min mean (m/s). Screened to 0-40.",
+  wind_speed_standard_deviation_m_s = "Within-interval SD of wind speed (m/s); turbulence proxy.",
+  wind_direction_deg = "Wind direction, 10-min mean (deg).",
+  nacelle_position_deg = "Nacelle yaw position (deg).",
+  density_adjusted_wind_speed_m_s = "Wind speed adjusted to standard air density (m/s) (inferred: Greenbyte-computed).",
+  power_kw = "Active power output, 10-min mean (kW). Negative = turbine consumption while idle. Not screened.",
+  power_standard_deviation_kw = "Within-interval SD of active power (kW).",
+  power_minimum_kw = "Minimum active power within the interval (kW).",
+  power_maximum_kw = "Maximum active power within the interval (kW).",
+  potential_power_default_pc_kw = "Expected power from the default power curve at the measured wind speed (kW). Gap vs power_kw = underperformance or downtime.",
+  turbine_power_setpoint_kw = "Power setpoint (curtailment limit) sent to the turbine (kW); 2050 = unconstrained.",
+  rotor_speed_rpm = "Rotor speed (RPM).",
+  generator_rpm_rpm = "Generator speed (RPM).",
+  blade_angle_pitch_position_a_deg = "Pitch angle of blade A (deg). High (~90) = feathered / stopped.",
+  blade_angle_pitch_position_b_deg = "Pitch angle of blade B (deg).",
+  blade_angle_pitch_position_c_deg = "Pitch angle of blade C (deg).",
+  nacelle_ambient_temperature_degc = "Ambient air temperature measured at the nacelle (deg C).",
+  nacelle_temperature_degc = "Temperature inside the nacelle (deg C).",
+  gear_oil_temperature_degc = "Gearbox oil sump temperature (deg C). Screened to -40..150.",
+  front_bearing_temperature_degc = "Gearbox/drive-train front bearing temperature (deg C).",
+  rear_bearing_temperature_degc = "Gearbox/drive-train rear bearing temperature (deg C).",
+  generator_bearing_front_temperature_degc = "Generator drive-end bearing temperature (deg C).",
+  generator_bearing_rear_temperature_degc = "Generator non-drive-end bearing temperature (deg C).",
+  stator_temperature_1_degc = "Generator stator winding temperature (deg C).",
+  energy_export_kwh = "Energy exported in the interval (kWh).",
+  energy_theoretical_kwh = "Theoretical energy at the measured wind speed (kWh) (inferred: from the power curve).",
+  lost_production_to_downtime_kwh = "Energy lost while the turbine was unavailable (kWh), Greenbyte allocation.",
+  lost_production_to_performance_kwh = "Energy lost to running below the power curve (kWh).",
+  lost_production_to_curtailment_total_kwh = "Energy lost to curtailment of any kind (kWh).",
+  time_based_iec_b_2_2_users_view = "Time-based availability for the interval per IEC 61400-26 B.2.2 (user's view), 0-1.",
+  time_based_system_avail = "Time-based system availability for the interval, 0-1.",
+  data_availability = "Share of the interval with valid SCADA data, 0-1.",
+  capacity_factor = "power_kw / rated power for the interval (inferred).")
+
+num <- core |> select(where(is.numeric), -turbine, -year)
+stats <- tibble(
+  variable = names(num),
+  na_pct = map_dbl(num, ~ round(100 * mean(is.na(.x)), 1)),
+  min    = map_dbl(num, ~ suppressWarnings(round(min(.x, na.rm = TRUE), 2))),
+  median = map_dbl(num, ~ round(median(.x, na.rm = TRUE), 2)),
+  max    = map_dbl(num, ~ suppressWarnings(round(max(.x, na.rm = TRUE), 2))))
+
+tibble(variable = names(core), type = map_chr(core, ~ class(.x)[1])) |>
+  left_join(stats, by = "variable") |>
+  mutate(description = unname(desc[variable])) |>
+  tbl()
+```
+
+# Event / status logs (`turbine_events.rds`, `turbine_stops.rds`)
+
+Each row is one event that the turbine controller logged. Events overlap: one stop
+generates several Informational and Warning rows around it. For interruption work,
+start from `turbine_stops.rds`.
+
+```{r events-cols}
+ev_desc <- c(
+  turbine = "Turbine number 1-6.",
+  start = "Event start, POSIXct UTC (second resolution).",
+  end = "Event end, POSIXct UTC. NA when the source end is '-' (instantaneous message) or the event was still open at export.",
+  duration_s = "Duration in seconds from the source 'Duration' field (hours can exceed 24). 0 for instantaneous Informational rows; NA for open-ended events. Matches end - start everywhere.",
+  instantaneous = "TRUE when the source end was '-' (a point-in-time message, not a state with a duration).",
+  status = "Event class: Stop (turbine stopped), Warning, Informational, Curtailment, Communication.",
+  code = "Senvion controller status code (integer).",
+  message = "Senvion text for the code.",
+  dup_exact = "TRUE for the 2nd+ copy of a row identical in every column within one year file (688 rows; no Stops). Kept because the source does not document whether these are distinct events.",
+  dup_cross_year = "TRUE for the later-year copy of an event that spans New Year and is listed with identical start/end in both year files (22 events, 4 of them Stops). Drop these to avoid double-counting.",
+  comment = "Free-text operator comment (rarely filled).",
+  service_contract_category = "Service-contract downtime category, e.g. 'Warnings (27)'.",
+  iec_category = "IEC 61400-26 availability category: Full Performance, Technical Standby, Forced outage, Scheduled Maintenance, Requested Shutdown, Out of Environmental/Electrical Specification, Partial Performance.",
+  global_contract_category = "Contract category (global); 2021+ files only.",
+  custom_contract_category = "Contract category (custom); 2021+ files only.",
+  file_year = "Year of the source file the row came from.")
+tibble(variable = names(events), type = map_chr(events, ~ class(.x)[1]),
+       na_pct = map_dbl(events, ~ round(100 * mean(is.na(.x)), 1)),
+       description = unname(ev_desc[names(events)])) |> tbl()
+```
+
+```{r events-status}
+events |> count(status, name = "rows") |>
+  left_join(events |> filter(!dup_exact, !dup_cross_year) |> count(status, name = "rows_excl_repeats"), by = "status") |>
+  arrange(desc(rows)) |> tbl(caption = "Rows by status")
+```
+
+```{r stops-iec}
+stops |> filter(!dup_cross_year, !dup_exact) |>
+  group_by(iec_category) |>
+  summarise(stops = n(), median_min = round(median(duration_s, na.rm = TRUE) / 60, 1),
+            total_hours = round(sum(duration_s, na.rm = TRUE) / 3600)) |>
+  arrange(desc(stops)) |> tbl(caption = "Stops by IEC category (repeats excluded)")
+```
+
+```{r stops-codes}
+stops |> filter(!dup_cross_year, !dup_exact) |>
+  group_by(code, message) |>
+  summarise(stops = n(), iec_category = names(which.max(table(iec_category, useNA = "ifany"))),
+            median_min = round(median(duration_s, na.rm = TRUE) / 60, 1),
+            p90_min = round(quantile(duration_s, .9, na.rm = TRUE) / 60, 1), .groups = "drop") |>
+  arrange(desc(stops)) |> slice_head(n = 30) |>
+  tbl(caption = "30 most frequent stop codes (repeats excluded)")
+```
+
+# Cleaning rules applied
+
+```{r rules}
+tribble(
+  ~issue, ~treatment,
+  "2023-2024 SCADA files are cumulative exports (each timestamp repeated up to 81x; only the first copy has values)", "Kept first appearance of each timestamp; later copies verified to add no values.",
+  "Column sets differ by year (299 / 303 / 312 columns); acceleration unit spelled mm/ss before 2023", "snake_case names; mm/ss treated as mm/s2; years stacked with NA for absent signals.",
+  "Greenbyte writes missing values as NaN", "Read as NA.",
+  "Physically impossible sensor values (e.g. T4 bearing temps stuck at 324.4 deg C, 7-19 Jul 2023; anemometer 2 stuck at -15 m/s)", "Set to NA: wind speeds outside 0-40 m/s, directions outside 0-360 deg, temperatures outside -40..150 deg C. Counts in cleaning_log.txt.",
+  "Power below zero", "Kept: idle self-consumption is real.",
+  "Repeated event rows", "Kept and flagged (dup_exact, dup_cross_year); none dropped.",
+  "Event end '-'", "end = NA, instantaneous = TRUE, duration 0 for Informational rows.") |>
+  tbl()
+```
+
+# Appendix A: all SCADA signals
+
+The per-year parquet files contain every signal below. `years` shows the span of
+source files where the signal appears.
+
+```{r appendix-scada}
+coldict |> filter(clean != "timestamp") |>
+  select(clean_name = clean, original_header = original, years) |>
+  tbl() |> scroll_box(height = "600px")
+```
+
+# Appendix B: PMU and grid meter columns
+
+```{r appendix-devices}
+tibble(pmu_10min = c(pmu_cols, rep(NA, max(0, length(grid_cols) - length(pmu_cols)))),
+       grid_meter_10min = c(grid_cols, rep(NA, max(0, length(pmu_cols) - length(grid_cols))))) |>
+  tbl() |> scroll_box(height = "500px")
+```

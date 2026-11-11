@@ -15,11 +15,13 @@
 # Outputs (out_dir):
 #   turbine_static.rds         one row per turbine (hub height, coords, COD)
 #   signal_mapping.rds         Greenbyte signal id -> title -> unit
-#   scada_10min_<year>.rds     all signals, one file per year (big)
-#   scada_10min_core.rds       2016-2024, turbine x 10-min, key signals only
-#   turbine_events.rds         every status/event row, deduped, durations
+#   scada_10min/scada_10min_<year>.parquet  all signals, one file per year
+#                              (query all years lazily with
+#                               arrow::open_dataset(scada_dir, unify_schemas = TRUE))
+#   scada_10min_core.parquet   2016-2024, turbine x 10-min, key signals only
+#   turbine_events.rds         every status/event row, repeats flagged
 #   turbine_stops.rds          Status == "Stop" subset of turbine_events
-#   pmu_10min.rds, grid_meter_10min.rds, device_events.rds
+#   pmu_10min.parquet, grid_meter_10min.parquet, device_events.rds
 #   column_dictionary.csv      clean name <-> original Greenbyte header
 #   cleaning_log.txt           every count this script reports
 #
@@ -40,8 +42,9 @@
 #      turbine-year completed to a regular 10-min grid, with
 #      src_row_missing = TRUE on inserted rows.
 #   4. Status logs: events open at a year boundary appear in BOTH
-#      year files (44 rows), plus 688 exact duplicate rows within
-#      files. -> deduped on (turbine, start, status, code, message).
+#      year files (22 events), plus 688 exact duplicate rows within
+#      files. -> kept and flagged (dup_cross_year, dup_exact), since
+#      the source does not document whether repeats are meaningful.
 #      Most Informational rows have end "-" (instantaneous) -> NA end,
 #      duration 0. Durations like "211:08:29" (hours > 24) parsed.
 #      2016-20 logs lack the two "contract category" columns -> NA.
@@ -61,11 +64,13 @@
 # free RAM per file). Tested with R 4.4.3 + data.table.
 # ============================================================
 library(data.table)
+library(arrow)        # large tables are written as parquet
 
 raw_dir <- "C:/Users/cantwi/Dropbox/Interruption Management/IM Project/Data/Source Data/Wind Farm Data"
 out_dir <- file.path(raw_dir, "Clean")
 if (!exists("years")) years <- 2016:2024   # set years <- 2016 first for a quick test
-dir.create(out_dir, showWarnings = FALSE)
+scada_dir <- file.path(out_dir, "scada_10min")   # one parquet per year
+dir.create(scada_dir, showWarnings = FALSE, recursive = TRUE)
 
 log_lines <- character()
 logf <- function(...) {
@@ -236,7 +241,7 @@ for (yr in years) {
   setkey(scada_yr, turbine, timestamp)
   logf("  %d: %d rows | %d grid rows inserted | %d signal cols",
        yr, nrow(scada_yr), sum(scada_yr$src_row_missing), ncol(scada_yr) - 4)
-  saveRDS(scada_yr, file.path(out_dir, sprintf("scada_10min_%d.rds", yr)))
+  write_parquet(scada_yr, file.path(scada_dir, sprintf("scada_10min_%d.parquet", yr)), compression = "zstd")
   missing_core <- setdiff(core_cols, names(scada_yr))
   if (length(missing_core)) logf("  %d: core cols absent: %s", yr, paste(missing_core, collapse = ", "))
   core_all[[as.character(yr)]] <- scada_yr[, intersect(core_cols, names(scada_yr)), with = FALSE]
@@ -244,7 +249,7 @@ for (yr in years) {
 }
 core <- rbindlist(core_all, use.names = TRUE, fill = TRUE); rm(core_all)
 setkey(core, turbine, timestamp)
-saveRDS(core, file.path(out_dir, "scada_10min_core.rds"))
+write_parquet(core, file.path(out_dir, "scada_10min_core.parquet"), compression = "zstd")
 logf("  core panel: %d rows x %d cols | %s .. %s", nrow(core), ncol(core),
      format(min(core$timestamp)), format(max(core$timestamp)))
 logf("  core NA share: power %.1f%% | wind speed %.1f%%",
@@ -270,14 +275,25 @@ ev <- rbindlist(lapply(status_files, function(f) {
   x[, `:=`(turbine   = as.integer(sub("^Status_Kelmarsh_([1-6])_.*", "\\1", basename(f))),
            file_year = as.integer(sub(".*_(20[0-9]{2})-01-0[13]_-_.*", "\\1", basename(f))))]
 }), use.names = TRUE, fill = TRUE)
-n0 <- nrow(ev)
-ev <- unique(ev)
-n1 <- nrow(ev)
-key_cols <- c("turbine", "timestamp_start", "status", "code", "message")
-setorderv(ev, c(key_cols, "file_year"))
-ev <- ev[, .SD[.N], by = key_cols]                     # latest file wins
-logf("  raw rows %d | exact dupes dropped %d | cross-year-file dupes dropped %d | kept %d",
-     n0, n0 - n1, n1 - nrow(ev), nrow(ev))
+# Repeated rows are KEPT and FLAGGED, not dropped (filter downstream):
+#   dup_exact      2nd+ copy of a row identical in every column within
+#                  one file (688 rows; all Informational/Warning, mostly
+#                  "Wind < start wind", adjacent lines; no Stops)
+#   dup_cross_year copy of an event in the later year file when the
+#                  event spans New Year and both files list it with the
+#                  same start/end (22 events; 4 of them Stops)
+# Same start + code but different end (633 "System OK" pairs, one with
+# end "-" and one with a real end) are distinct records: not flagged.
+ev[, row_in_file := seq_len(.N), by = file_year]
+all_cols <- setdiff(names(ev), "row_in_file")
+ev[, dup_exact := duplicated(ev, by = all_cols)]
+xy_cols <- c("turbine", "timestamp_start", "timestamp_end", "status", "code", "message")
+ev[, n_files := uniqueN(file_year), by = xy_cols]
+ev[, dup_cross_year := n_files > 1 & file_year > min(file_year), by = xy_cols]
+ev[, c("n_files", "row_in_file") := NULL]
+logf("  raw rows %d | flagged dup_exact %d | flagged dup_cross_year %d | unflagged %d",
+     nrow(ev), sum(ev$dup_exact), sum(ev$dup_cross_year & !ev$dup_exact),
+     sum(!ev$dup_exact & !ev$dup_cross_year))
 
 ev[, `:=`(start = parse_ts(timestamp_start),
           end   = parse_ts(timestamp_end),
@@ -293,14 +309,14 @@ for (cc in c("comment", "service_contract_category", "iec_category",
   if (cc %in% names(ev)) set(ev, i = which(ev[[cc]] == ""), j = cc, value = NA_character_)
 ev[, c("timestamp_start", "timestamp_end", "duration") := NULL]
 setcolorder(ev, c("turbine", "start", "end", "duration_s", "instantaneous",
-                  "status", "code", "message"))
+                  "status", "code", "message", "dup_exact", "dup_cross_year"))
 setkey(ev, turbine, start)
 logf("  by status: %s", ev[, .N, by = status][, paste(status, N, sep = "=", collapse = ", ")])
 saveRDS(ev, file.path(out_dir, "turbine_events.rds"))
 
 stops <- ev[status == "Stop"]
-logf("  stops: %d | open-ended (no end) %d | median %.0f s | IEC: %s",
-     nrow(stops), sum(is.na(stops$end)), median(stops$duration_s, na.rm = TRUE),
+logf("  stops: %d (%d flagged as repeats) | open-ended (no end) %d | median %.0f s | IEC: %s",
+     nrow(stops), sum(stops$dup_exact | stops$dup_cross_year), sum(is.na(stops$end)), median(stops$duration_s, na.rm = TRUE),
      stops[, .N, by = iec_category][order(-N)][, paste(iec_category, N, sep = "=", collapse = ", ")])
 saveRDS(stops, file.path(out_dir, "turbine_stops.rds"))
 
@@ -321,8 +337,8 @@ read_device <- function(pattern, label) {
 }
 pmu  <- read_device("^Device_Data_Kelmarsh_PMU_.*\\.csv$", "PMU")
 grid <- read_device("^Device_Data_Kelmarsh_Grid_Meter_.*\\.csv$", "grid meter")
-saveRDS(pmu,  file.path(out_dir, "pmu_10min.rds"))
-saveRDS(grid, file.path(out_dir, "grid_meter_10min.rds"))
+write_parquet(pmu,  file.path(out_dir, "pmu_10min.parquet"), compression = "zstd")
+write_parquet(grid, file.path(out_dir, "grid_meter_10min.parquet"), compression = "zstd")
 
 dev_ev <- rbindlist(lapply(
   list.files(raw_dir, "^Status_Kelmarsh_(PMU|Grid_Meter)_.*\\.csv$", recursive = TRUE, full.names = TRUE),
