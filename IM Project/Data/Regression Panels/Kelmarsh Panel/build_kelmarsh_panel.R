@@ -116,6 +116,8 @@ if (length(unknown)) {
 }
 n_open <- sum(is.na(stops$end))
 stops[is.na(end), end := start + 600]                # open-ended: one slot
+n_neg <- stops[end < start, .N]
+stops[end < start, end := start]                     # 1 source row ends before it starts
 
 # ---- 3. stops -> episodes ---------------------------------------------------
 setorder(stops, turbine, start)
@@ -218,7 +220,8 @@ if (file.exists(old)) invisible(file.remove(old))
 
 # ---- checks -----------------------------------------------------------------
 cat("panel:", nrow(panel), "rows x", ncol(panel), "cols at", PANEL_WIDTH, "| buckets:", BUCKET_WIDTH, "\n")
-cat("logged stops:", nrow(stops), "(open-ended set to 10 min:", n_open, ") ->", nrow(episodes), "episodes\n")
+cat("logged stops:", nrow(stops), "(open-ended set to 10 min:", n_open, "| end<start fixed:", n_neg,
+    ") ->", nrow(episodes), "episodes\n")
 print(episodes[, .(episodes = .N, low_wind = sum(low_wind), in_treatment = sum(Interruption) +
                      sum(Interruption_Manual), median_min = round(median(duration_min), 1),
                    wind_unknown = sum(is.na(wind_at_start))), by = class][order(-episodes)])
