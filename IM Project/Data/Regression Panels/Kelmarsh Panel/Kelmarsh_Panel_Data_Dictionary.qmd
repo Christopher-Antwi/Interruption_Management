@@ -1,0 +1,149 @@
+---
+title: "Kelmarsh Panel Data Dictionary"
+subtitle: "Variable definitions for kelmarsh_panel.parquet — wind-farm analogue of the CDC-50 base panel"
+author: "Christopher Antwi"
+date: today
+format:
+  html:
+    theme: cosmo
+    toc: true
+    code-fold: true
+    embed-resources: true
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+library(tidyverse)
+library(kableExtra)
+library(arrow)
+
+panel_dir <- "C:/Users/cantwi/Dropbox/Interruption Management/IM Project/Data/Source Data/Wind Farm Data/Panel"
+panel    <- read_parquet(file.path(panel_dir, "kelmarsh_panel.parquet"))
+episodes <- readRDS(file.path(panel_dir, "kelmarsh_episodes.rds"))
+tbl <- function(df, ...) kbl(df, ...) |>
+  kable_styling(bootstrap_options = c("striped", "condensed", "hover"), full_width = FALSE)
+```
+
+This dictionary is generated from the current `kelmarsh_panel.parquet`, built by
+`build_kelmarsh_panel.R`. Every column gets a row. Leads and lags are summarised by
+pattern rather than listed one by one. **Grain:** one row per *turbine x slot*, where a
+slot is `PANEL_WIDTH`, 10 minutes by default and the native SCADA interval. A *bucket*
+is the concentration-metric window `BUCKET_WIDTH` (6 hours by default, T~n~), defined
+per turbine. All times are UTC and mark the start of the slot or bucket.
+
+**How it maps to the CDC-50 panel.**
+
+```{r mapping}
+tribble(
+  ~concept, ~`CDC-50 base panel`, ~`Kelmarsh panel`,
+  "Unit / grain", "one line, 30-s slot", "6 turbines, 10-min slot",
+  "Stop", "key process parameters at zero", "controller 'Stop' event in the turbine event log",
+  "Episode", "stop seconds chained (2-s gap)", "Stop events chained per turbine (10-min gap)",
+  "Interruption (treatment)", "episode matched to an exogenous logbook stop", "episode whose first stop has IEC category Out of Electrical Spec, Out of Environmental Spec or Requested Shutdown",
+  "Stage sub-flag", "Interruption_Feeding", "Interruption_Grid (Out of Electrical Spec)",
+  "Rate outcome", "Speed", "Power",
+  "Quality outcomes", "Weight, Drug_Content", "Perf_Ratio (power / power-curve potential), Power_SD; Gear_Oil_Temp (component stress)",
+  "Controls", "Lot_Change, Press_Temperature, Press_Humidity", "Wind_Speed (or Wind_Bin FE), Wind_Speed_SD, Ambient_Temp",
+  "Fixed effects", "Date_FE, Hour_FE", "Date_FE, Hour_FE, Turbine_FE") |> tbl()
+```
+
+# Variables
+
+```{r dictionary}
+desc <- c(
+  turbine = "Turbine 1-6 (panel unit; key).",
+  slot = "Slot start, POSIXct UTC (key).",
+  bucket = "Start of the turbine's concentration-metric bucket containing this slot (floor of BUCKET_WIDTH).",
+  Date = "Calendar date of the slot (UTC).", Hour = "Hour of day 0-23 (UTC).",
+  Month = "Month 1-12.", Year = "Calendar year.",
+  Date_FE = "Alias of Date for fixed-effects formulas.", Hour_FE = "Alias of Hour for fixed-effects formulas.",
+  Turbine_FE = "Alias of turbine for fixed-effects formulas.",
+  Hub_Height = "Hub height (m): 68.5 for turbines 3 and 6, 78.5 otherwise.",
+  stop_any = "1 if any Stop episode (any category) overlaps the slot.",
+  stop_share = "Share of the slot covered by Stop episodes (0-1): downtime intensity.",
+  Interruption = "1 if the slot overlaps an exogenous episode (trigger IEC in EXOG_IEC). Slot-level treatment.",
+  Interruption_Grid = "1 if the slot overlaps an exogenous episode triggered by Out of Electrical Specification (grid).",
+  episode_id = "ID of the (earliest) Stop episode overlapping the slot; NA when none. Joins to kelmarsh_episodes.rds.",
+  Power = "Active power, slot mean (kW). Negative = self-consumption while idle.",
+  Power_SD = "Within-interval SD of active power (kW), slot mean: output stability.",
+  Potential = "Power-curve potential at the measured wind (kW), Greenbyte default curve.",
+  Setpoint = "Turbine power setpoint (kW); below 2050 = curtailed.",
+  Perf_Ratio = "Power / Potential when Potential > 5% of rated (else NA). About 1 when running to curve; the mean is about 1.08 because the default curve is conservative.",
+  Wind_Speed = "Nacelle wind speed, slot mean (m/s). The dominant control for any power outcome.",
+  Wind_Speed_SD = "Within-interval wind-speed SD (m/s): turbulence control.",
+  Wind_Bin = "floor(Wind_Speed): 1 m/s bins, for use as FE or a flexible control.",
+  Wind_Dir = "Wind direction (deg, 0 = north).",
+  Ambient_Temp = "Nacelle ambient temperature (deg C).",
+  Rotor_Speed = "Rotor speed (RPM).",
+  Pitch_A = "Blade A pitch angle (deg); ~90 = feathered / stopped.",
+  Gear_Oil_Temp = "Gearbox oil temperature (deg C).",
+  Gen_Bearing_Temp = "Generator front bearing temperature (deg C).",
+  Energy_kWh = "Energy exported in the slot (kWh).",
+  Lost_Downtime_kWh = "Energy lost to downtime in the slot (kWh), Greenbyte allocation.",
+  Availability = "Time-based IEC B.2.2 availability (0-1).",
+  n_obs = "Number of 10-min SCADA rows with power in the slot (1 at the default width).",
+  N_Interruptions = "Count of exogenous episode onsets in the slot's bucket (0 when untreated).",
+  Avg_Interruption_Dur = "Mean duration (min) of exogenous episodes starting in the bucket; NA when none.",
+  Total_Interruption_Dur = "Summed duration (min) of exogenous episodes starting in the bucket; 0 when none.",
+  Concentration_Mu = "mu_b: mean of tau (onset offset / T_n) across the bucket's exogenous onsets. NA when untreated.",
+  Concentration_Sigma = "sigma_b: population SD of tau; 0 for single-event buckets, NA when untreated.",
+  Concentration_CV = "sigma_b / mu_b; NA when untreated or mu = 0.",
+  Treated = "1 if the slot's bucket contains at least one exogenous onset.",
+  Concentration_C0 = "Concentration_Mu when treated, 0 otherwise.",
+  Concentration_Sigma0 = "Concentration_Sigma when treated, 0 otherwise.",
+  Concentration_CV0 = "Concentration_CV when treated, 0 otherwise.")
+
+ll <- str_detect(names(panel), "_(lead|lag)[0-9]+$")
+base <- tibble(variable = names(panel)[!ll], type = map_chr(panel[!ll], ~ class(.x)[1]),
+               na_pct = map_dbl(panel[!ll], ~ round(100 * mean(is.na(.x)), 1)),
+               description = unname(desc[names(panel)[!ll]]))
+leadlag <- tibble(variable = names(panel)[ll]) |>
+  mutate(stem = str_remove(variable, "_(lead|lag)[0-9]+$"),
+         dir = str_extract(variable, "lead|lag")) |>
+  group_by(stem, dir) |>
+  summarise(k = paste0("1..", n()), .groups = "drop") |>
+  transmute(variable = paste0(stem, "_", dir, "{", k, "}"), type = "numeric", na_pct = NA_real_,
+            description = paste0(stem, " ", k, " slot(s) ", if_else(dir == "lead", "ahead", "behind"),
+                                 " for the same turbine (grid-aware; NA at panel edges or missing slots)."))
+bind_rows(base, leadlag) |> tbl()
+```
+
+# Episodes (`kelmarsh_episodes.rds`)
+
+One row per Stop episode: overlapping or near-adjacent Stop events on one turbine,
+chained together. The episode's IEC category is the category of its **first**
+(triggering) stop.
+
+```{r episodes}
+episodes |>
+  group_by(trigger_iec = coalesce(trigger_iec, "(missing)")) |>
+  summarise(episodes = n(), exogenous = sum(Interruption),
+            median_min = round(median(duration_min), 1),
+            p90_min = round(quantile(duration_min, .9), 1),
+            multi_stop_share = round(mean(n_stops > 1), 2)) |>
+  arrange(desc(episodes)) |> tbl(caption = "Episodes by triggering IEC category")
+```
+
+```{r exog-codes}
+episodes |> filter(Interruption == 1) |>
+  count(trigger_iec, trigger_code, trigger_msg, sort = TRUE) |>
+  slice_head(n = 20) |> tbl(caption = "Most common exogenous triggers")
+```
+
+# Notes for estimation
+
+- **Sample.** To mirror the CDC-50 RIF spec, drop slots that are stopped for a
+  non-exogenous reason (`!(stop_any == 1 & Interruption == 0)`), and require
+  `!is.na(Wind_Speed)`. About half of the interrupted slots have no SCADA wind reading,
+  mostly during grid losses.
+- **Wind is the key control.** Power depends on wind speed roughly cubically. Use
+  `Wind_Bin` fixed effects or a flexible function of `Wind_Speed`. Perf_Ratio already
+  normalises by the power curve.
+- **Concentration metrics.** With 6-hour buckets, only 28 of 533 treated buckets have
+  more than one exogenous onset. Sigma and CV vary very little. Widen `BUCKET_WIDTH`
+  (for example "1 day") for more multi-event buckets.
+- **Clustering.** Rows are 10-minute observations of 6 turbines that share weather.
+  Consider clustering by Date (site-day) in addition to the HC1 errors used for CDC-50.
