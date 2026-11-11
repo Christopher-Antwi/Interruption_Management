@@ -1,4 +1,4 @@
----
+﻿---
 title: "Kelmarsh Panel Data Dictionary"
 subtitle: "Variable definitions for kelmarsh_panel.parquet — wind-farm analogue of the CDC-50 base panel"
 author: "Christopher Antwi"
@@ -40,10 +40,13 @@ per turbine. All times are UTC and mark the start of the slot or bucket.
 tribble(
   ~concept, ~`CDC-50 base panel`, ~`Kelmarsh panel`,
   "Unit / grain", "one line, 30-s slot", "6 turbines, 10-min slot",
-  "Stop", "key process parameters at zero", "controller 'Stop' event in the turbine event log",
-  "Episode", "stop seconds chained (2-s gap)", "Stop events chained per turbine (10-min gap)",
-  "Interruption (treatment)", "episode matched to an exogenous logbook stop", "episode whose first stop has IEC category Out of Electrical Spec, Out of Environmental Spec or Requested Shutdown",
-  "Stage sub-flag", "Interruption_Feeding", "Interruption_Grid (Out of Electrical Spec)",
+  "Machine-side stop", "key process parameters at zero", "power minimum <= 0 while wind >= 4 m/s",
+  "Episode", "stop seconds chained (2-s gap)", "consecutive stopped 10-min slots per turbine",
+  "Logbook", "shift logbook, Table A1 classes", "controller event log, Stop rows classed by code (kelmarsh_stop_classes.csv)",
+  "Interruption (treatment)", "episode matched (+-30 min) to an exogenous logbook stop", "episode matched (+-20 min) to a Grid / Environment / Fault / Comm / Requested stop",
+  "Stage sub-flag", "Interruption_Feeding", "Interruption_Grid (+ _Environment, _Fault, _Comm, _Requested)",
+  "Excluded stops", "pit stops, RTD/PAT, drifts", "Routine: battery and brake tests, cable unwind, oil flushing",
+  "Operator stops", "(not separated)", "Interruption_Manual: separate treatment (labor / recovery)",
   "Rate outcome", "Speed", "Power",
   "Quality outcomes", "Weight, Drug_Content", "Perf_Ratio (power / power-curve potential), Power_SD; Gear_Oil_Temp (component stress)",
   "Controls", "Lot_Change, Press_Temperature, Press_Humidity", "Wind_Speed (or Wind_Bin FE), Wind_Speed_SD, Ambient_Temp",
@@ -62,11 +65,19 @@ desc <- c(
   Date_FE = "Alias of Date for fixed-effects formulas.", Hour_FE = "Alias of Hour for fixed-effects formulas.",
   Turbine_FE = "Alias of turbine for fixed-effects formulas.",
   Hub_Height = "Hub height (m): 68.5 for turbines 3 and 6, 78.5 otherwise.",
-  stop_any = "1 if any Stop episode (any category) overlaps the slot.",
-  stop_share = "Share of the slot covered by Stop episodes (0-1): downtime intensity.",
-  Interruption = "1 if the slot overlaps an exogenous episode (trigger IEC in EXOG_IEC). Slot-level treatment.",
-  Interruption_Grid = "1 if the slot overlaps an exogenous episode triggered by Out of Electrical Specification (grid).",
-  episode_id = "ID of the (earliest) Stop episode overlapping the slot; NA when none. Joins to kelmarsh_episodes.rds.",
+  stop_any = "Machine-side stop: 1 if power_minimum_kw <= 0 while wind_speed >= CUT_IN (4 m/s) in the slot (CDC-50: key flows at zero).",
+  stop_share = "Share of the slot's 10-min rows that are machine-side stops (0/1 at the default width).",
+  episode_id = "Machine-side stop episode (consecutive stopped slots of one turbine); NA when running. Joins to kelmarsh_episodes.rds.",
+  Interruption = "1 if the slot is in a machine episode matched (+-20 min, sequential) to an exogenous log stop: Grid, Environment, Fault, Comm or Requested. Slot-level treatment.",
+  Interruption_Grid = "Matched to a Grid stop (grid loss, voltage, frequency). Analogue of Interruption_Feeding.",
+  Interruption_Environment = "Matched to an Environment stop (icing, gusts, wind direction, tower oscillation).",
+  Interruption_Fault = "Matched to a Fault stop (turbine equipment / sensor / controller fault).",
+  Interruption_Comm = "Matched to a Comm stop (control-system communication failure).",
+  Interruption_Requested = "Matched to a Requested stop (park master / grid operator).",
+  Interruption_Manual = "Matched to a Manual stop (service, remote, emergency switch). Separate treatment, NOT part of Interruption.",
+  log_stop_any = "Log-only: slot overlaps any non-Routine Stop in the event log (no SCADA confirmation needed).",
+  log_Interruption = "Log-only: slot overlaps an exogenous-class Stop in the event log. Robustness flag that still sees stops when SCADA is missing (grid losses).",
+  Power_Min = "Minimum active power within the slot (kW); drives the machine-side stop rule.",
   Power = "Active power, slot mean (kW). Negative = self-consumption while idle.",
   Power_SD = "Within-interval SD of active power (kW), slot mean: output stability.",
   Potential = "Power-curve potential at the measured wind (kW), Greenbyte default curve.",
@@ -111,39 +122,45 @@ leadlag <- tibble(variable = names(panel)[ll]) |>
 bind_rows(base, leadlag) |> tbl()
 ```
 
-# Episodes (`kelmarsh_episodes.rds`)
+# Episodes (`kelmarsh_episodes.rds`) and log stops (`kelmarsh_log_stops.rds`)
 
-One row per Stop episode: overlapping or near-adjacent Stop events on one turbine,
-chained together. The episode's IEC category is the category of its **first**
-(triggering) stop.
+An episode is a run of consecutive machine-side stopped slots on one turbine. Each
+log Stop gets a class from `kelmarsh_stop_classes.csv`. Log stops are then matched
+in time order to the earliest unmatched episode on the same turbine that starts
+within +-20 min. The episode takes the class of the stop it matched.
 
 ```{r episodes}
 episodes |>
-  group_by(trigger_iec = coalesce(trigger_iec, "(missing)")) |>
-  summarise(episodes = n(), exogenous = sum(Interruption),
-            median_min = round(median(duration_min), 1),
-            p90_min = round(quantile(duration_min, .9), 1),
-            multi_stop_share = round(mean(n_stops > 1), 2)) |>
-  arrange(desc(episodes)) |> tbl(caption = "Episodes by triggering IEC category")
+  mutate(class = coalesce(class, "(unmatched)")) |>
+  group_by(class) |>
+  summarise(episodes = n(), median_min = median(duration_min),
+            p90_min = quantile(duration_min, .9), .groups = "drop") |>
+  arrange(desc(episodes)) |> tbl(caption = "Machine episodes by matched class")
+```
+
+```{r log-match}
+log_stops <- readRDS(file.path(panel_dir, "kelmarsh_log_stops.rds"))
+log_stops |>
+  group_by(class) |>
+  summarise(stops = n(), matched = sum(!is.na(matched_episode)),
+            pct_matched = round(100 * mean(!is.na(matched_episode))), .groups = "drop") |>
+  arrange(desc(stops)) |> tbl(caption = "Log stops by class and match rate")
 ```
 
 ```{r exog-codes}
-episodes |> filter(Interruption == 1) |>
-  count(trigger_iec, trigger_code, trigger_msg, sort = TRUE) |>
-  slice_head(n = 20) |> tbl(caption = "Most common exogenous triggers")
+episodes |> filter(!is.na(class)) |>
+  count(class, log_code, log_message, sort = TRUE) |>
+  slice_head(n = 25) |> tbl(caption = "Most common matched stop codes")
 ```
 
 # Notes for estimation
 
-- **Sample.** To mirror the CDC-50 RIF spec, drop slots that are stopped for a
-  non-exogenous reason (`!(stop_any == 1 & Interruption == 0)`), and require
-  `!is.na(Wind_Speed)`. About half of the interrupted slots have no SCADA wind reading,
-  mostly during grid losses.
-- **Wind is the key control.** Power depends on wind speed roughly cubically. Use
-  `Wind_Bin` fixed effects or a flexible function of `Wind_Speed`. Perf_Ratio already
-  normalises by the power curve.
-- **Concentration metrics.** With 6-hour buckets, only 28 of 533 treated buckets have
-  more than one exogenous onset. Sigma and CV vary very little. Widen `BUCKET_WIDTH`
-  (for example "1 day") for more multi-event buckets.
-- **Clustering.** Rows are 10-minute observations of 6 turbines that share weather.
-  Consider clustering by Date (site-day) in addition to the HC1 errors used for CDC-50.
+- **Sample.** To mirror the CDC-50 RIF spec, drop slots stopped for a non-exogenous or
+  unmatched reason (`!(stop_any == 1 & Interruption == 0)`) and require
+  `!is.na(Wind_Speed)`. Most unmatched machine episodes are single slots just above
+  cut-in (median wind 4.4 m/s), i.e. low-wind cycling rather than real stops.
+- **Why log stops go unmatched.** SCADA is missing during the stop (common for grid
+  losses), the wind was below cut-in (no lost output), or the stop happened inside an
+  episode that had already started. `log_Interruption` is the log-only robustness flag.
+- **Wind is the key control.** Use `Wind_Bin` FE or a flexible function of `Wind_Speed`.
+- **Clustering.** Six turbines share the same weather, so consider clustering by Date (site-day).
